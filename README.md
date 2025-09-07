@@ -1,5 +1,7 @@
 # go-commons
 
+<sub><sup>English | [中文 README](README-zh.md)</sup></sub>
+
 A small collection of Go utility packages focused on string helpers and basic system utilities, with minimal third‑party dependencies.
 
 ## Features

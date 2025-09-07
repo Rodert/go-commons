@@ -9,6 +9,16 @@ import (
 )
 
 // IsEmpty 检查字符串是否为空
+//
+// 参数 / Parameters:
+//   str - 要检查的字符串 / string to check
+//
+// 返回值 / Returns:
+//   bool - 如果字符串为空返回true，否则返回false / true if string is empty, false otherwise
+//
+// 示例 / Example:
+//   IsEmpty("")     // true
+//   IsEmpty("abc")  // false
 // IsEmpty checks if a string is empty
 func IsEmpty(str string) bool {
 	return len(str) == 0

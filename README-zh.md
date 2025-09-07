@@ -2,6 +2,9 @@
 
 <sub><sup>[English README](README.md) | 中文</sup></sub>
 
+[![Go Reference](https://pkg.go.dev/badge/github.com/Rodert/go-commons.svg)](https://pkg.go.dev/github.com/Rodert/go-commons)
+[![License: Unlicense](https://img.shields.io/badge/license-Unlicense-blue.svg)](LICENSE)
+
 一组精简的 Go 实用工具包，包含字符串工具与基础系统工具，尽量不依赖第三方库。
 
 ## 特性

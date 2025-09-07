@@ -2,6 +2,9 @@
 
 <sub><sup>English | [中文 README](README-zh.md)</sup></sub>
 
+[![Go Reference](https://pkg.go.dev/badge/github.com/Rodert/go-commons.svg)](https://pkg.go.dev/github.com/Rodert/go-commons)
+[![License: Unlicense](https://img.shields.io/badge/license-Unlicense-blue.svg)](LICENSE)
+
 A small collection of Go utility packages focused on string helpers and basic system utilities, with minimal third‑party dependencies.
 
 ## Features

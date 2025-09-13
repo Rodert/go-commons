@@ -36,6 +36,24 @@ A small collection of Go utility packages focused on string helpers and basic sy
 go get github.com/Rodert/go-commons
 ```
 
+## Development
+
+### Auto-formatting
+
+This project uses Git hooks to automatically format Go code before each commit.
+
+To install the pre-commit hook:
+
+```bash
+make hooks
+```
+
+To manually format all Go files:
+
+```bash
+make fmt
+```
+
 ## Usage
 
 ### String Utilities

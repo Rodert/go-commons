@@ -18,6 +18,16 @@ fmt:
 	@echo "格式化代码..."
 	@$(GOFMT) -w -s .
 
+# 安装git钩子
+.PHONY: hooks
+hooks:
+	@echo "安装git钩子..."
+	@cp -f .git/hooks/pre-commit.sample .git/hooks/pre-commit
+	@chmod +x .git/hooks/pre-commit
+	@echo '#!/bin/bash\n\n# 自动格式化Go代码的pre-commit钩子\necho "Running pre-commit hook: Auto-formatting Go code..."\n\n# 获取所有暂存的Go文件\nSTAGED_GO_FILES=$$(git diff --cached --name-only --diff-filter=ACM | grep "\\.go$$")\n\n# 如果没有Go文件被修改，则退出\nif [[ "$$STAGED_GO_FILES" = "" ]]; then\n  echo "No Go files staged for commit. Skipping formatting."\n  exit 0\nfi\n\n# 格式化所有暂存的Go文件\necho "$$STAGED_GO_FILES" | xargs gofmt -l -w\n\n# 重新添加格式化后的文件到暂存区\necho "$$STAGED_GO_FILES" | xargs git add\n\necho "Go code formatting completed successfully."\n\nexit 0' > .git/hooks/pre-commit
+	@chmod +x .git/hooks/pre-commit
+	@echo "Git钩子安装完成，现在每次提交前会自动格式化Go代码。"
+
 # 运行所有测试
 .PHONY: test
 test:

@@ -35,10 +35,10 @@ func PadCenter(str string, size int, padChar rune) string {
 	if len(str) >= size {
 		return str
 	}
-	
+
 	padsNeeded := size - len(str)
 	padLeft := padsNeeded / 2
 	padRight := padsNeeded - padLeft
-	
+
 	return strings.Repeat(string(padChar), padLeft) + str + strings.Repeat(string(padChar), padRight)
 }

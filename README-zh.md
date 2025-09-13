@@ -36,6 +36,24 @@
 go get github.com/Rodert/go-commons
 ```
 
+## 开发
+
+### 自动格式化
+
+本项目使用Git钩子在每次提交前自动格式化Go代码。
+
+安装pre-commit钩子：
+
+```bash
+make hooks
+```
+
+手动格式化所有Go文件：
+
+```bash
+make fmt
+```
+
 ## 使用示例
 
 ### 字符串工具

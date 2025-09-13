@@ -11,14 +11,18 @@ import (
 // IsEmpty 检查字符串是否为空
 //
 // 参数 / Parameters:
-//   str - 要检查的字符串 / string to check
+//
+//	str - 要检查的字符串 / string to check
 //
 // 返回值 / Returns:
-//   bool - 如果字符串为空返回true，否则返回false / true if string is empty, false otherwise
+//
+//	bool - 如果字符串为空返回true，否则返回false / true if string is empty, false otherwise
 //
 // 示例 / Example:
-//   IsEmpty("")     // true
-//   IsEmpty("abc")  // false
+//
+//	IsEmpty("")     // true
+//	IsEmpty("abc")  // false
+//
 // IsEmpty checks if a string is empty
 func IsEmpty(str string) bool {
 	return len(str) == 0
@@ -81,17 +85,17 @@ func TruncateWithSuffix(str string, maxWidth int, suffix string) string {
 	if maxWidth < 0 {
 		return ""
 	}
-	
+
 	// 如果原字符串长度小于等于最大宽度，直接返回原字符串
 	if len(str) <= maxWidth {
 		return str
 	}
-	
+
 	// 如果后缀长度大于等于最大宽度，返回截断的后缀
 	if len(suffix) >= maxWidth {
 		return suffix[:maxWidth]
 	}
-	
+
 	// 正常情况：截断字符串并添加后缀
 	return str[0:maxWidth-len(suffix)] + suffix
 }

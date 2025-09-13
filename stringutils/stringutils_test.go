@@ -202,7 +202,7 @@ func TestTruncateWithSuffix(t *testing.T) {
 		t.Run(test.name, func(t *testing.T) {
 			result := TruncateWithSuffix(test.input, test.maxWidth, test.suffix)
 			if result != test.expected {
-				t.Errorf("TruncateWithSuffix(%q, %d, %q) = %q; want %q", 
+				t.Errorf("TruncateWithSuffix(%q, %d, %q) = %q; want %q",
 					test.input, test.maxWidth, test.suffix, result, test.expected)
 			}
 		})

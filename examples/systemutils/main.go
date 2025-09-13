@@ -32,7 +32,7 @@ func main() {
 	} else {
 		fmt.Printf("  Logical Cores: %d\n", cpuInfo.LogicalCores)
 		fmt.Printf("  Usage: %.2f%%\n", cpuInfo.UsagePercent)
-		fmt.Printf("  Load Average: %.2f %.2f %.2f\n", 
+		fmt.Printf("  Load Average: %.2f %.2f %.2f\n",
 			cpuInfo.LoadAvg[0], cpuInfo.LoadAvg[1], cpuInfo.LoadAvg[2])
 		fmt.Printf("  GOMAXPROCS: %d\n", runtime.GOMAXPROCS(0))
 	}
@@ -81,7 +81,7 @@ func main() {
 		if err != nil {
 			continue
 		}
-		fmt.Printf("    %s: %.1f%% used (%.1f GB free)\n", 
+		fmt.Printf("    %s: %.1f%% used (%.1f GB free)\n",
 			info.Path, info.UsedRatio, float64(info.Free)/1e9)
 	}
 	fmt.Println()
@@ -122,23 +122,23 @@ func formatBytes(bytes uint64) string {
 func monitorSystem() {
 	for i := 0; i < 5; i++ {
 		fmt.Printf("  [%d/5] ", i+1)
-		
+
 		// CPU 使用率
 		if cpuInfo, err := cpuutils.GetCPUInfo(); err == nil {
 			fmt.Printf("CPU: %.1f%% ", cpuInfo.UsagePercent)
 		}
-		
+
 		// 内存使用率
 		if memInfo, err := memutils.GetMemInfo(); err == nil {
 			usage := float64(memInfo.Used) / float64(memInfo.Total) * 100
 			fmt.Printf("Memory: %.1f%% ", usage)
 		}
-		
+
 		// 磁盘使用率
 		if diskInfo, err := diskutils.GetDiskInfo("/"); err == nil {
 			fmt.Printf("Disk: %.1f%%", diskInfo.UsedRatio)
 		}
-		
+
 		fmt.Println()
 		time.Sleep(1 * time.Second)
 	}
@@ -150,31 +150,31 @@ func showResourceChart() {
 	cpuInfo, err1 := cpuutils.GetCPUInfo()
 	memInfo, err2 := memutils.GetMemInfo()
 	diskInfo, err3 := diskutils.GetDiskInfo("/")
-	
+
 	if err1 != nil || err2 != nil || err3 != nil {
 		fmt.Println("  Error getting system information")
 		return
 	}
-	
+
 	cpuPercent := int(cpuInfo.UsagePercent / 10)
 	memPercent := int(float64(memInfo.Used) / float64(memInfo.Total) * 10)
 	diskPercent := int(diskInfo.UsedRatio / 10)
-	
+
 	// 显示图表
 	fmt.Println("  Resource Usage (each █ = 10%):")
-	
-	fmt.Printf("  CPU  [%s%s] %.1f%%\n", 
-		repeatChar('█', cpuPercent), 
+
+	fmt.Printf("  CPU  [%s%s] %.1f%%\n",
+		repeatChar('█', cpuPercent),
 		repeatChar('░', 10-cpuPercent),
 		cpuInfo.UsagePercent)
-	
-	fmt.Printf("  MEM  [%s%s] %.1f%%\n", 
-		repeatChar('█', memPercent), 
+
+	fmt.Printf("  MEM  [%s%s] %.1f%%\n",
+		repeatChar('█', memPercent),
 		repeatChar('░', 10-memPercent),
 		float64(memInfo.Used)/float64(memInfo.Total)*100)
-	
-	fmt.Printf("  DISK [%s%s] %.1f%%\n", 
-		repeatChar('█', diskPercent), 
+
+	fmt.Printf("  DISK [%s%s] %.1f%%\n",
+		repeatChar('█', diskPercent),
 		repeatChar('░', 10-diskPercent),
 		diskInfo.UsedRatio)
 }

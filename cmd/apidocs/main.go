@@ -4,8 +4,9 @@
 package main
 
 import (
-	_ "github.com/Rodert/go-commons/docs" // 导入生成的docs
 	"log"
+
+	_ "github.com/Rodert/go-commons/docs" // 导入生成的docs
 
 	"github.com/gin-gonic/gin"
 	swaggerFiles "github.com/swaggo/files"

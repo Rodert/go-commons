@@ -206,12 +206,12 @@ func HasMaxLength(str string, maxLength int) bool {
 // 参数:
 //   - value: 要验证的数值
 //   - minValue: 最小值
-//   - max: 最大值
+//   - maxValue: 最大值
 //
 // 返回:
 //   - bool: 是否在指定范围内
-func IsInRange(value, minValue, max int) bool {
-	return value >= minValue && value <= max
+func IsInRange(value, minValue, maxValue int) bool {
+	return value >= minValue && value <= maxValue
 }
 
 // ContainsUppercase 验证字符串是否包含大写字母

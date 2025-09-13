@@ -1,0 +1,282 @@
+{
+    "swagger": "2.0",
+    "info": {
+        "description": "Go Commons 是一个精简的Go实用工具库，专注于字符串处理和系统工具",
+        "title": "Go Commons API",
+        "termsOfService": "http://swagger.io/terms/",
+        "contact": {
+            "name": "API Support",
+            "url": "https://github.com/Rodert/go-commons",
+            "email": "support@example.com"
+        },
+        "license": {
+            "name": "Unlicense",
+            "url": "https://github.com/Rodert/go-commons/blob/main/LICENSE"
+        },
+        "version": "1.0"
+    },
+    "host": "localhost:8080",
+    "basePath": "/api/v1",
+    "paths": {
+        "/string/isEmpty/{str}": {
+            "get": {
+                "description": "检查提供的字符串是否为空",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "字符串工具"
+                ],
+                "summary": "检查字符串是否为空",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "要检查的字符串",
+                        "name": "str",
+                        "in": "path",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "type": "object",
+                            "additionalProperties": true
+                        }
+                    }
+                }
+            }
+        },
+        "/string/isNotEmpty/{str}": {
+            "get": {
+                "description": "检查提供的字符串是否非空",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "字符串工具"
+                ],
+                "summary": "检查字符串是否非空",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "要检查的字符串",
+                        "name": "str",
+                        "in": "path",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "type": "object",
+                            "additionalProperties": true
+                        }
+                    }
+                }
+            }
+        },
+        "/string/padCenter": {
+            "post": {
+                "description": "在字符串两侧填充字符，使其居中",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "字符串工具"
+                ],
+                "summary": "居中填充字符串",
+                "parameters": [
+                    {
+                        "description": "填充请求",
+                        "name": "request",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/main.PadCenterRequest"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "type": "object",
+                            "additionalProperties": true
+                        }
+                    }
+                }
+            }
+        },
+        "/string/reverse/{str}": {
+            "get": {
+                "description": "反转提供的字符串",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "字符串工具"
+                ],
+                "summary": "反转字符串",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "要反转的字符串",
+                        "name": "str",
+                        "in": "path",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "type": "object",
+                            "additionalProperties": true
+                        }
+                    }
+                }
+            }
+        },
+        "/string/swapCase/{str}": {
+            "get": {
+                "description": "交换提供的字符串中字母的大小写",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "字符串工具"
+                ],
+                "summary": "交换字符串大小写",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "要处理的字符串",
+                        "name": "str",
+                        "in": "path",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "type": "object",
+                            "additionalProperties": true
+                        }
+                    }
+                }
+            }
+        },
+        "/system/cpu": {
+            "get": {
+                "description": "获取CPU核心数、使用率百分比和负载平均值",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "系统工具"
+                ],
+                "summary": "获取CPU信息",
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "type": "object",
+                            "additionalProperties": true
+                        }
+                    }
+                }
+            }
+        },
+        "/system/disk": {
+            "get": {
+                "description": "获取磁盘空间信息，包括总空间、可用空间、已用空间和使用率",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "系统工具"
+                ],
+                "summary": "获取磁盘信息",
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "type": "object",
+                            "additionalProperties": true
+                        }
+                    }
+                }
+            }
+        },
+        "/system/memory": {
+            "get": {
+                "description": "获取总内存、可用内存和已用内存",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "系统工具"
+                ],
+                "summary": "获取内存信息",
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "type": "object",
+                            "additionalProperties": true
+                        }
+                    }
+                }
+            }
+        }
+    },
+    "definitions": {
+        "main.PadCenterRequest": {
+            "type": "object",
+            "required": [
+                "padStr",
+                "size",
+                "str"
+            ],
+            "properties": {
+                "padStr": {
+                    "type": "string"
+                },
+                "size": {
+                    "type": "integer"
+                },
+                "str": {
+                    "type": "string"
+                }
+            }
+        }
+    }
+}

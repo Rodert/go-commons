@@ -48,6 +48,20 @@ go get github.com/Rodert/go-commons
 make hooks
 ```
 
+### API文档
+
+本项目包含一个基于Swagger UI的交互式API文档界面。这使您可以通过Web界面探索和测试库中的函数。
+
+在本地启动API文档服务器：
+
+```bash
+./run_apidocs.sh
+```
+
+然后在浏览器中访问 [http://localhost:8080](http://localhost:8080) 查看交互式API文档。
+
+您也可以访问在线API文档：[https://rodert.github.io/go-commons](https://rodert.github.io/go-commons)（从main分支自动部署）。
+
 手动格式化所有Go文件：
 
 ```bash

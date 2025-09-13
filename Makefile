@@ -12,6 +12,19 @@ COVER_PROFILE=coverage.out
 .PHONY: all
 all: fmt test
 
+# 生成并运行API文档
+.PHONY: apidocs
+apidocs:
+	@echo "生成并运行API文档..."
+	@if command -v $(shell go env GOPATH)/bin/swag > /dev/null; then \
+		echo "生成Swagger文档..."; \
+		$(shell go env GOPATH)/bin/swag init -g cmd/apidocs/main.go -o docs; \
+		echo "启动API文档服务器在 http://localhost:8080"; \
+		go run cmd/apidocs/main.go; \
+	else \
+		echo "swag 未安装，请先安装: go install github.com/swaggo/swag/cmd/swag@latest"; \
+	fi
+
 # 格式化代码
 .PHONY: fmt
 fmt:

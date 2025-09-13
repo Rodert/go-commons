@@ -48,6 +48,20 @@ To install the pre-commit hook:
 make hooks
 ```
 
+### API Documentation
+
+This project includes an interactive API documentation interface using Swagger UI. This allows you to explore and test the library's functions through a web interface.
+
+To start the API documentation server locally:
+
+```bash
+./run_apidocs.sh
+```
+
+Then open your browser and navigate to [http://localhost:8080](http://localhost:8080) to view the interactive API documentation.
+
+You can also access the online API documentation at [https://rodert.github.io/go-commons](https://rodert.github.io/go-commons) (automatically deployed from the main branch).
+
 To manually format all Go files:
 
 ```bash

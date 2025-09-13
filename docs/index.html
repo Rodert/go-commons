@@ -1,0 +1,175 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Go Commons - 实用工具库</title>
+    <link rel="stylesheet" href="css/style.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.7.0/styles/github.min.css">
+</head>
+<body>
+    <header>
+        <div class="container">
+            <h1>Go Commons</h1>
+            <p>一个精简的Go实用工具库，专注于字符串处理和系统工具</p>
+            <div class="badges">
+                <a href="https://pkg.go.dev/github.com/Rodert/go-commons" target="_blank">
+                    <img src="https://pkg.go.dev/badge/github.com/Rodert/go-commons.svg" alt="Go Reference">
+                </a>
+                <a href="https://github.com/Rodert/go-commons/blob/main/LICENSE" target="_blank">
+                    <img src="https://img.shields.io/badge/license-Unlicense-blue.svg" alt="License: Unlicense">
+                </a>
+                <a href="https://github.com/Rodert/go-commons/actions/workflows/go-test.yml" target="_blank">
+                    <img src="https://github.com/Rodert/go-commons/actions/workflows/go-test.yml/badge.svg" alt="Go Tests">
+                </a>
+                <a href="https://github.com/Rodert/go-commons/actions/workflows/go-lint.yml" target="_blank">
+                    <img src="https://github.com/Rodert/go-commons/actions/workflows/go-lint.yml/badge.svg" alt="Go Lint">
+                </a>
+                <a href="https://codecov.io/gh/Rodert/go-commons" target="_blank">
+                    <img src="https://codecov.io/gh/Rodert/go-commons/branch/main/graph/badge.svg" alt="codecov">
+                </a>
+            </div>
+            <div class="cta-buttons">
+                <a href="https://github.com/Rodert/go-commons" class="btn primary" target="_blank">GitHub</a>
+                <a href="#install" class="btn secondary">安装指南</a>
+            </div>
+        </div>
+    </header>
+
+    <main class="container">
+        <section class="features">
+            <h2>特性</h2>
+            <div class="feature-grid">
+                <div class="feature-card">
+                    <h3>无第三方依赖</h3>
+                    <p>尽可能使用Go标准库，减少外部依赖</p>
+                </div>
+                <div class="feature-card">
+                    <h3>跨平台支持</h3>
+                    <p>支持Windows、Linux和macOS等主流操作系统</p>
+                </div>
+                <div class="feature-card">
+                    <h3>全面测试</h3>
+                    <p>完善的单元测试和持续集成</p>
+                </div>
+                <div class="feature-card">
+                    <h3>简单易用</h3>
+                    <p>API设计简洁直观，易于上手</p>
+                </div>
+            </div>
+        </section>
+
+        <section id="install">
+            <h2>安装</h2>
+            <pre><code class="language-bash">go get github.com/Rodert/go-commons</code></pre>
+        </section>
+
+        <section id="packages">
+            <h2>包和函数</h2>
+            
+            <div class="package" id="stringutils">
+                <h3>字符串工具 (stringutils)</h3>
+                <div class="function-groups">
+                    <div class="function-group">
+                        <h4>空与空白检查</h4>
+                        <ul class="function-list">
+                            <li data-function="IsEmpty" data-package="stringutils">
+                                <span class="function-name">IsEmpty</span>
+                                <span class="function-desc">检查字符串是否为空</span>
+                            </li>
+                            <li data-function="IsNotEmpty" data-package="stringutils">
+                                <span class="function-name">IsNotEmpty</span>
+                                <span class="function-desc">检查字符串是否非空</span>
+                            </li>
+                            <li data-function="IsBlank" data-package="stringutils">
+                                <span class="function-name">IsBlank</span>
+                                <span class="function-desc">检查字符串是否为空白</span>
+                            </li>
+                            <li data-function="IsNotBlank" data-package="stringutils">
+                                <span class="function-name">IsNotBlank</span>
+                                <span class="function-desc">检查字符串是否非空白</span>
+                            </li>
+                        </ul>
+                    </div>
+                    
+                    <div class="function-group">
+                        <h4>字符串转换</h4>
+                        <ul class="function-list">
+                            <li data-function="Reverse" data-package="stringutils">
+                                <span class="function-name">Reverse</span>
+                                <span class="function-desc">反转字符串</span>
+                            </li>
+                            <li data-function="SwapCase" data-package="stringutils">
+                                <span class="function-name">SwapCase</span>
+                                <span class="function-desc">交换字符串中字母的大小写</span>
+                            </li>
+                            <li data-function="Capitalize" data-package="stringutils">
+                                <span class="function-name">Capitalize</span>
+                                <span class="function-desc">将字符串的第一个字符转为大写</span>
+                            </li>
+                            <li data-function="PadCenter" data-package="stringutils">
+                                <span class="function-name">PadCenter</span>
+                                <span class="function-desc">在字符串两侧填充字符，使其居中</span>
+                            </li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+
+            <div class="package" id="systemutils">
+                <h3>系统工具 (systemutils)</h3>
+                <div class="function-groups">
+                    <div class="function-group">
+                        <h4>CPU工具 (cpuutils)</h4>
+                        <ul class="function-list">
+                            <li data-function="GetCPUInfo" data-package="systemutils/cpuutils">
+                                <span class="function-name">GetCPUInfo</span>
+                                <span class="function-desc">获取CPU核心数、使用率百分比和负载平均值</span>
+                            </li>
+                        </ul>
+                    </div>
+                    
+                    <div class="function-group">
+                        <h4>内存工具 (memutils)</h4>
+                        <ul class="function-list">
+                            <li data-function="GetMemInfo" data-package="systemutils/memutils">
+                                <span class="function-name">GetMemInfo</span>
+                                <span class="function-desc">获取总内存、可用内存和已用内存</span>
+                            </li>
+                        </ul>
+                    </div>
+                    
+                    <div class="function-group">
+                        <h4>磁盘工具 (diskutils)</h4>
+                        <ul class="function-list">
+                            <li data-function="GetDiskInfo" data-package="systemutils/diskutils">
+                                <span class="function-name">GetDiskInfo</span>
+                                <span class="function-desc">获取磁盘空间信息，包括总空间、可用空间、已用空间和使用率</span>
+                            </li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <section id="function-detail" class="hidden">
+            <h2 id="function-title"></h2>
+            <div class="function-info">
+                <p id="function-description"></p>
+                <h4>示例</h4>
+                <pre><code class="language-go" id="function-example"></code></pre>
+                <button class="btn secondary" id="back-to-list">返回列表</button>
+            </div>
+        </section>
+    </main>
+
+    <footer>
+        <div class="container">
+            <p>&copy; 2023 Go Commons. 使用 <a href="https://github.com/Rodert/go-commons/blob/main/LICENSE" target="_blank">Unlicense</a> 许可证。</p>
+        </div>
+    </footer>
+
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.7.0/highlight.min.js"></script>
+    <script src="js/script.js"></script>
+</body>
+</html>

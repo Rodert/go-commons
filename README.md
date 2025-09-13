@@ -28,7 +28,7 @@ A small collection of Go utility packages focused on string helpers and basic sy
 ## Module
 
 - Module path: `github.com/Rodert/go-commons`
-- Go version: `1.24.3`
+- Go version: `1.24.7`
 
 ## Install
 

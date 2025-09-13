@@ -28,7 +28,7 @@
 ## 模块
 
 - 模块路径：`github.com/Rodert/go-commons`
-- Go 版本：`1.24.3`
+- Go 版本：`1.24.7`
 
 ## 安装
 

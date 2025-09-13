@@ -194,6 +194,8 @@ func TestTruncateWithSuffix(t *testing.T) {
 		{"width equal to length", "hello", 5, "...", "hello"},
 		{"width greater than length", "hello", 10, "...", "hello"},
 		{"empty suffix", "hello world", 8, "", "hello wo"},
+		{"suffix longer than maxWidth", "hello", 2, "...", ".."},
+		{"suffix equal to maxWidth", "hello", 3, "...", "..."},
 	}
 
 	for _, test := range tests {

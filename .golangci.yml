@@ -1,0 +1,27 @@
+# 配置golangci-lint静态代码分析工具
+
+linters:
+  enable:
+    - errcheck      # 检查未处理的错误
+    - gosimple      # 简化代码的建议
+    - govet         # 报告可疑的构造
+    - ineffassign   # 检测未使用的赋值
+    - staticcheck   # Go静态分析
+    - typecheck     # 类型检查
+    - unused        # 检查未使用的常量、变量、函数和类型
+    - gofmt         # 检查代码是否已格式化
+    - goimports     # 检查导入是否已格式化
+    - misspell      # 检查常见的拼写错误
+    - revive        # 快速、可配置、可扩展、灵活且美观的Go linter
+
+issues:
+  exclude-rules:
+    - path: _test\.go
+      linters:
+        - errcheck  # 测试文件中可以忽略一些错误检查
+
+run:
+  timeout: 5m
+  tests: true
+  skip-dirs:
+    - vendor/

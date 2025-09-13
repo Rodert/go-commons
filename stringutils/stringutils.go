@@ -77,12 +77,22 @@ func Truncate(str string, maxWidth int) string {
 // TruncateWithSuffix 截断字符串到指定长度并添加后缀
 // TruncateWithSuffix truncates a string to a specified length and adds a suffix
 func TruncateWithSuffix(str string, maxWidth int, suffix string) string {
+	// 处理特殊情况
 	if maxWidth < 0 {
 		return ""
 	}
+	
+	// 如果原字符串长度小于等于最大宽度，直接返回原字符串
 	if len(str) <= maxWidth {
 		return str
 	}
+	
+	// 如果后缀长度大于等于最大宽度，返回截断的后缀
+	if len(suffix) >= maxWidth {
+		return suffix[:maxWidth]
+	}
+	
+	// 正常情况：截断字符串并添加后缀
 	return str[0:maxWidth-len(suffix)] + suffix
 }
 

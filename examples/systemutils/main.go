@@ -3,6 +3,8 @@ package main
 import (
 	"fmt"
 	"log"
+	"os"
+	"runtime"
 	"time"
 
 	"github.com/Rodert/go-commons/systemutils/cpuutils"
@@ -12,6 +14,14 @@ import (
 
 func main() {
 	fmt.Println("=== Go Commons System Utils Demo ===")
+	fmt.Println()
+
+	// 基本系统信息
+	fmt.Println("🖥️  Basic System Information:")
+	fmt.Printf("  OS: %s\n", runtime.GOOS)
+	fmt.Printf("  Architecture: %s\n", runtime.GOARCH)
+	fmt.Printf("  Go Version: %s\n", runtime.Version())
+	fmt.Printf("  Hostname: %s\n", getHostname())
 	fmt.Println()
 
 	// CPU 信息示例
@@ -24,6 +34,7 @@ func main() {
 		fmt.Printf("  Usage: %.2f%%\n", cpuInfo.UsagePercent)
 		fmt.Printf("  Load Average: %.2f %.2f %.2f\n", 
 			cpuInfo.LoadAvg[0], cpuInfo.LoadAvg[1], cpuInfo.LoadAvg[2])
+		fmt.Printf("  GOMAXPROCS: %d\n", runtime.GOMAXPROCS(0))
 	}
 	fmt.Println()
 
@@ -38,6 +49,15 @@ func main() {
 		fmt.Printf("  Available: %s\n", formatBytes(memInfo.Available))
 		fmt.Printf("  Usage: %.2f%%\n", float64(memInfo.Used)/float64(memInfo.Total)*100)
 	}
+
+	// Go 运行时内存信息
+	var rtm runtime.MemStats
+	runtime.ReadMemStats(&rtm)
+	fmt.Println("  Go Runtime Memory:")
+	fmt.Printf("    Allocated: %s\n", formatBytes(rtm.Alloc))
+	fmt.Printf("    Total Allocated: %s\n", formatBytes(rtm.TotalAlloc))
+	fmt.Printf("    System: %s\n", formatBytes(rtm.Sys))
+	fmt.Printf("    GC Cycles: %d\n", rtm.NumGC)
 	fmt.Println()
 
 	// 磁盘信息示例
@@ -52,11 +72,36 @@ func main() {
 		fmt.Printf("  Free: %s\n", formatBytes(diskInfo.Free))
 		fmt.Printf("  Usage: %.2f%%\n", diskInfo.UsedRatio)
 	}
+
+	// 检查多个路径
+	paths := []string{"/", "/home", "/tmp"}
+	fmt.Println("  Multiple Disk Paths:")
+	for _, path := range paths {
+		info, err := diskutils.GetDiskInfo(path)
+		if err != nil {
+			continue
+		}
+		fmt.Printf("    %s: %.1f%% used (%.1f GB free)\n", 
+			info.Path, info.UsedRatio, float64(info.Free)/1e9)
+	}
 	fmt.Println()
 
 	// 系统监控示例
 	fmt.Println("📊 System Monitoring (5 seconds):")
 	monitorSystem()
+
+	// 资源使用率图表示例
+	fmt.Println("📈 Resource Usage Chart:")
+	showResourceChart()
+}
+
+// getHostname 获取主机名
+func getHostname() string {
+	hostname, err := os.Hostname()
+	if err != nil {
+		return "unknown"
+	}
+	return hostname
 }
 
 // formatBytes 格式化字节数为可读格式
@@ -97,4 +142,48 @@ func monitorSystem() {
 		fmt.Println()
 		time.Sleep(1 * time.Second)
 	}
+}
+
+// showResourceChart 显示资源使用率图表
+func showResourceChart() {
+	// 获取CPU和内存使用率
+	cpuInfo, err1 := cpuutils.GetCPUInfo()
+	memInfo, err2 := memutils.GetMemInfo()
+	diskInfo, err3 := diskutils.GetDiskInfo("/")
+	
+	if err1 != nil || err2 != nil || err3 != nil {
+		fmt.Println("  Error getting system information")
+		return
+	}
+	
+	cpuPercent := int(cpuInfo.UsagePercent / 10)
+	memPercent := int(float64(memInfo.Used) / float64(memInfo.Total) * 10)
+	diskPercent := int(diskInfo.UsedRatio / 10)
+	
+	// 显示图表
+	fmt.Println("  Resource Usage (each █ = 10%):")
+	
+	fmt.Printf("  CPU  [%s%s] %.1f%%\n", 
+		repeatChar('█', cpuPercent), 
+		repeatChar('░', 10-cpuPercent),
+		cpuInfo.UsagePercent)
+	
+	fmt.Printf("  MEM  [%s%s] %.1f%%\n", 
+		repeatChar('█', memPercent), 
+		repeatChar('░', 10-memPercent),
+		float64(memInfo.Used)/float64(memInfo.Total)*100)
+	
+	fmt.Printf("  DISK [%s%s] %.1f%%\n", 
+		repeatChar('█', diskPercent), 
+		repeatChar('░', 10-diskPercent),
+		diskInfo.UsedRatio)
+}
+
+// repeatChar 重复字符
+func repeatChar(char rune, count int) string {
+	result := ""
+	for i := 0; i < count; i++ {
+		result += string(char)
+	}
+	return result
 }

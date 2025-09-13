@@ -7,9 +7,9 @@ import (
 	"log"
 
 	"github.com/gin-gonic/gin"
-	_ "github.com/Rodert/go-commons/docs" // 导入生成的docs
 	swaggerFiles "github.com/swaggo/files"
 	ginSwagger "github.com/swaggo/gin-swagger"
+	_ "github.com/Rodert/go-commons/docs" // 导入生成的docs
 )
 
 // @title Go Commons API

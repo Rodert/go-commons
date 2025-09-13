@@ -52,6 +52,16 @@ make hooks
 
 This project includes an interactive API documentation interface using Swagger UI. This allows you to explore and test the library's functions through a web interface.
 
+#### 📌 Online API Documentation
+
+**Visit our API documentation online at: [https://rodert.github.io/go-commons](https://rodert.github.io/go-commons)**
+
+The online documentation is automatically deployed from the main branch and provides the most up-to-date API reference.
+
+![API Documentation Interface](images/api-img.png)
+
+#### Local Development
+
 To start the API documentation server locally:
 
 ```bash
@@ -59,8 +69,6 @@ To start the API documentation server locally:
 ```
 
 Then open your browser and navigate to [http://localhost:8080](http://localhost:8080) to view the interactive API documentation.
-
-You can also access the online API documentation at [https://rodert.github.io/go-commons](https://rodert.github.io/go-commons) (automatically deployed from the main branch).
 
 To manually format all Go files:
 

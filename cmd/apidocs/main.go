@@ -2,10 +2,11 @@ package main
 
 import (
 	_ "github.com/Rodert/go-commons/docs" // 导入生成的docs
+	"log"
+
 	"github.com/gin-gonic/gin"
 	swaggerFiles "github.com/swaggo/files"
 	ginSwagger "github.com/swaggo/gin-swagger"
-	"log"
 )
 
 // @title Go Commons API

@@ -63,7 +63,7 @@ func TestIsValidDomain(t *testing.T) {
 
 func TestIsPortOpen(t *testing.T) {
 	// 启动一个测试服务器
-	server := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+	server := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, _ *http.Request) {
 		w.WriteHeader(http.StatusOK)
 	}))
 	defer server.Close()
@@ -89,7 +89,7 @@ func TestIsPortOpen(t *testing.T) {
 
 func TestIsURLReachable(t *testing.T) {
 	// 启动一个测试服务器
-	server := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+	server := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, _ *http.Request) {
 		w.WriteHeader(http.StatusOK)
 	}))
 	defer server.Close()

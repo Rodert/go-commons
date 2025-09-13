@@ -5,6 +5,15 @@
 echo "===== 运行 go-commons 所有测试用例 ====="
 echo ""
 
+# 检查是否使用 --no-apidocs 参数
+NO_APIDOCS=false
+for arg in "$@"
+do
+    if [ "$arg" == "--no-apidocs" ]; then
+        NO_APIDOCS=true
+    fi
+done
+
 # 设置颜色
 GREEN="\033[0;32m"
 RED="\033[0;31m"
@@ -18,8 +27,13 @@ if ! command -v go &> /dev/null; then
 fi
 
 # 运行所有测试
-echo -e "${YELLOW}运行所有测试...${NC}"
-go test -v ./...
+if [ "$NO_APIDOCS" = true ]; then
+    echo -e "${YELLOW}运行所有测试（不生成apidocs）...${NC}"
+    go test -v ./... -tags=noswagger
+else
+    echo -e "${YELLOW}运行所有测试...${NC}"
+    go test -v ./...
+fi
 TEST_RESULT=$?
 
 echo ""

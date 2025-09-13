@@ -1,3 +1,6 @@
+//go:build !noswagger
+// +build !noswagger
+
 package main
 
 import (

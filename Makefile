@@ -47,6 +47,12 @@ test:
 	@echo "运行所有测试..."
 	@$(GO) test -v ./...
 
+# 运行所有测试但不生成apidocs
+.PHONY: test-no-apidocs
+test-no-apidocs:
+	@echo "运行所有测试（不生成apidocs）..."
+	@$(GO) test -v ./... -tags=noswagger
+
 # 运行指定包的测试
 .PHONY: test-pkg
 test-pkg:
@@ -98,6 +104,7 @@ help:
 	@echo "  make          - 格式化代码并运行所有测试"
 	@echo "  make fmt      - 格式化代码"
 	@echo "  make test     - 运行所有测试"
+	@echo "  make test-no-apidocs - 运行所有测试但不生成apidocs"
 	@echo "  make test-pkg PKG=./path/to/package - 运行指定包的测试"
 	@echo "  make cover    - 运行测试并生成覆盖率报告"
 	@echo "  make bench    - 运行基准测试"

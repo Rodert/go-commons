@@ -11,6 +11,9 @@
 - 完善了README和README-zh文档
 - 添加了GitHub Actions自动化工作流
 - 添加了代码覆盖率报告
+- 添加了netutils网络工具包（IP验证、域名验证、端口检查、URL可达性检查等）
+- 添加了cryptutils加密解密工具包（哈希计算、Base64编解码、AES加密解密、UUID生成等）
+- 添加了validationutils验证工具包（邮箱、手机号、URL、IP地址验证、密码强度检查等）
 
 ### 修复
 - 修复了测试文件中的格式问题

@@ -58,7 +58,9 @@ func main() {
 	})
 
 	// 启动服务器
-	r.Run(":8080")
+	if err := r.Run(":8080"); err != nil {
+		log.Fatalf("启动服务器失败: %v", err)
+	}
 }
 
 // IsEmptyHandler godoc

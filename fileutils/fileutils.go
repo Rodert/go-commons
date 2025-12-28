@@ -20,7 +20,8 @@ import (
 //   - error: 如果读取失败则返回错误 / error if reading fails
 //
 // 示例 / Example:
-//   content, err := ReadFile("test.txt")
+//
+//	content, err := ReadFile("test.txt")
 //
 // ReadFile reads the entire file content
 func ReadFile(filePath string) ([]byte, error) {
@@ -37,7 +38,8 @@ func ReadFile(filePath string) ([]byte, error) {
 //   - error: 如果读取失败则返回错误 / error if reading fails
 //
 // 示例 / Example:
-//   content, err := ReadFileString("test.txt")
+//
+//	content, err := ReadFileString("test.txt")
 //
 // ReadFileString reads the entire file content as string
 func ReadFileString(filePath string) (string, error) {
@@ -59,7 +61,8 @@ func ReadFileString(filePath string) (string, error) {
 //   - error: 如果写入失败则返回错误 / error if writing fails
 //
 // 示例 / Example:
-//   err := WriteFile("test.txt", []byte("hello"), 0644)
+//
+//	err := WriteFile("test.txt", []byte("hello"), 0644)
 //
 // WriteFile writes data to a file
 func WriteFile(filePath string, data []byte, perm os.FileMode) error {
@@ -82,7 +85,8 @@ func WriteFile(filePath string, data []byte, perm os.FileMode) error {
 //   - error: 如果写入失败则返回错误 / error if writing fails
 //
 // 示例 / Example:
-//   err := WriteFileString("test.txt", "hello", 0644)
+//
+//	err := WriteFileString("test.txt", "hello", 0644)
 //
 // WriteFileString writes string content to a file
 func WriteFileString(filePath string, content string, perm os.FileMode) error {
@@ -99,7 +103,8 @@ func WriteFileString(filePath string, content string, perm os.FileMode) error {
 //   - error: 如果读取失败则返回错误 / error if reading fails
 //
 // 示例 / Example:
-//   lines, err := ReadFileLines("test.txt")
+//
+//	lines, err := ReadFileLines("test.txt")
 //
 // ReadFileLines reads file content line by line
 func ReadFileLines(filePath string) ([]string, error) {
@@ -131,7 +136,8 @@ func ReadFileLines(filePath string) ([]string, error) {
 //   - bool: 如果存在返回true / true if exists
 //
 // 示例 / Example:
-//   exists := Exists("test.txt")
+//
+//	exists := Exists("test.txt")
 //
 // Exists checks if a file or directory exists
 func Exists(path string) bool {
@@ -148,7 +154,8 @@ func Exists(path string) bool {
 //   - bool: 如果是目录返回true / true if is directory
 //
 // 示例 / Example:
-//   isDir := IsDir("/path/to/dir")
+//
+//	isDir := IsDir("/path/to/dir")
 //
 // IsDir checks if a path is a directory
 func IsDir(path string) bool {
@@ -168,7 +175,8 @@ func IsDir(path string) bool {
 //   - bool: 如果是文件返回true / true if is file
 //
 // 示例 / Example:
-//   isFile := IsFile("test.txt")
+//
+//	isFile := IsFile("test.txt")
 //
 // IsFile checks if a path is a file
 func IsFile(path string) bool {
@@ -189,7 +197,8 @@ func IsFile(path string) bool {
 //   - error: 如果获取失败则返回错误 / error if fails
 //
 // 示例 / Example:
-//   size, err := GetFileSize("test.txt")
+//
+//	size, err := GetFileSize("test.txt")
 //
 // GetFileSize gets file size in bytes
 func GetFileSize(filePath string) (int64, error) {
@@ -209,7 +218,8 @@ func GetFileSize(filePath string) (int64, error) {
 //   - string: 格式化后的文件大小 / formatted file size
 //
 // 示例 / Example:
-//   FormatFileSize(1024) // "1.00 KB"
+//
+//	FormatFileSize(1024) // "1.00 KB"
 //
 // FormatFileSize formats file size to human-readable format
 func FormatFileSize(size int64) string {
@@ -236,7 +246,8 @@ func FormatFileSize(size int64) string {
 //   - error: 如果复制失败则返回错误 / error if copying fails
 //
 // 示例 / Example:
-//   err := CopyFile("source.txt", "dest.txt")
+//
+//	err := CopyFile("source.txt", "dest.txt")
 //
 // CopyFile copies a file
 func CopyFile(src, dst string) error {
@@ -282,7 +293,8 @@ func CopyFile(src, dst string) error {
 //   - error: 如果移动失败则返回错误 / error if moving fails
 //
 // 示例 / Example:
-//   err := MoveFile("old.txt", "new.txt")
+//
+//	err := MoveFile("old.txt", "new.txt")
 //
 // MoveFile moves or renames a file
 func MoveFile(src, dst string) error {
@@ -304,7 +316,8 @@ func MoveFile(src, dst string) error {
 //   - error: 如果删除失败则返回错误 / error if deletion fails
 //
 // 示例 / Example:
-//   err := DeleteFile("test.txt")
+//
+//	err := DeleteFile("test.txt")
 //
 // DeleteFile deletes a file
 func DeleteFile(filePath string) error {
@@ -320,7 +333,8 @@ func DeleteFile(filePath string) error {
 //   - error: 如果删除失败则返回错误 / error if deletion fails
 //
 // 示例 / Example:
-//   err := DeleteDir("/path/to/dir")
+//
+//	err := DeleteDir("/path/to/dir")
 //
 // DeleteDir deletes a directory and all its contents
 func DeleteDir(dirPath string) error {
@@ -337,7 +351,8 @@ func DeleteDir(dirPath string) error {
 //   - error: 如果创建失败则返回错误 / error if creation fails
 //
 // 示例 / Example:
-//   err := CreateDir("/path/to/dir", 0755)
+//
+//	err := CreateDir("/path/to/dir", 0755)
 //
 // CreateDir creates a directory and all parent directories
 func CreateDir(dirPath string, perm os.FileMode) error {
@@ -353,7 +368,8 @@ func CreateDir(dirPath string, perm os.FileMode) error {
 //   - string: 连接后的路径 / joined path
 //
 // 示例 / Example:
-//   path := JoinPath("dir", "subdir", "file.txt")
+//
+//	path := JoinPath("dir", "subdir", "file.txt")
 //
 // JoinPath joins path elements
 func JoinPath(elements ...string) string {
@@ -369,7 +385,8 @@ func JoinPath(elements ...string) string {
 //   - string: 清理后的路径 / cleaned path
 //
 // 示例 / Example:
-//   clean := CleanPath("./dir/../file.txt")
+//
+//	clean := CleanPath("./dir/../file.txt")
 //
 // CleanPath cleans a path (removes redundant separators and "."/"..")
 func CleanPath(path string) string {
@@ -385,7 +402,8 @@ func CleanPath(path string) string {
 //   - string: 文件名或目录名 / file or directory name
 //
 // 示例 / Example:
-//   name := BaseName("/path/to/file.txt") // "file.txt"
+//
+//	name := BaseName("/path/to/file.txt") // "file.txt"
 //
 // BaseName returns the last element of path
 func BaseName(path string) string {
@@ -401,7 +419,8 @@ func BaseName(path string) string {
 //   - string: 目录路径 / directory path
 //
 // 示例 / Example:
-//   dir := DirName("/path/to/file.txt") // "/path/to"
+//
+//	dir := DirName("/path/to/file.txt") // "/path/to"
 //
 // DirName returns the directory part of path
 func DirName(path string) string {
@@ -417,7 +436,8 @@ func DirName(path string) string {
 //   - string: 文件扩展名 / file extension
 //
 // 示例 / Example:
-//   ext := ExtName("file.txt") // ".txt"
+//
+//	ext := ExtName("file.txt") // ".txt"
 //
 // ExtName returns the file extension (with dot)
 func ExtName(filePath string) string {
@@ -433,7 +453,8 @@ func ExtName(filePath string) string {
 //   - string: 不带扩展名的文件名 / file name without extension
 //
 // 示例 / Example:
-//   name := FileNameWithoutExt("file.txt") // "file"
+//
+//	name := FileNameWithoutExt("file.txt") // "file"
 //
 // FileNameWithoutExt returns the file name without extension
 func FileNameWithoutExt(filePath string) string {
@@ -452,7 +473,8 @@ func FileNameWithoutExt(filePath string) string {
 //   - error: 如果获取失败则返回错误 / error if fails
 //
 // 示例 / Example:
-//   abs, err := AbsPath("./file.txt")
+//
+//	abs, err := AbsPath("./file.txt")
 //
 // AbsPath returns the absolute path
 func AbsPath(path string) (string, error) {
@@ -469,10 +491,11 @@ func AbsPath(path string) (string, error) {
 //   - error: 如果遍历失败则返回错误 / error if walking fails
 //
 // 示例 / Example:
-//   WalkDir("/path/to/dir", func(path string, info os.FileInfo, err error) error {
-//     fmt.Println(path)
-//     return nil
-//   })
+//
+//	WalkDir("/path/to/dir", func(path string, info os.FileInfo, err error) error {
+//	  fmt.Println(path)
+//	  return nil
+//	})
 //
 // WalkDir walks the directory tree
 func WalkDir(root string, fn filepath.WalkFunc) error {
@@ -490,7 +513,8 @@ func WalkDir(root string, fn filepath.WalkFunc) error {
 //   - error: 如果查找失败则返回错误 / error if searching fails
 //
 // 示例 / Example:
-//   files, err := FindFiles("/path/to/dir", "*.txt")
+//
+//	files, err := FindFiles("/path/to/dir", "*.txt")
 //
 // FindFiles finds files matching the pattern in a directory
 func FindFiles(root, pattern string) ([]string, error) {
@@ -522,7 +546,8 @@ func FindFiles(root, pattern string) ([]string, error) {
 //   - string: 文件类型描述 / file type description
 //
 // 示例 / Example:
-//   fileType := GetFileType("file.txt") // "text"
+//
+//	fileType := GetFileType("file.txt") // "text"
 //
 // GetFileType returns file type description based on extension
 func GetFileType(filePath string) string {

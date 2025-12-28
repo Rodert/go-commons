@@ -76,6 +76,52 @@ A comprehensive collection of Go utility packages with minimal third‑party dep
 go get github.com/Rodert/go-commons
 ```
 
+## Quick Start
+
+```go
+package main
+
+import (
+	"fmt"
+	"github.com/Rodert/go-commons/stringutils"
+	"github.com/Rodert/go-commons/timeutils"
+	"github.com/Rodert/go-commons/configutils"
+)
+
+func main() {
+	// String utilities
+	fmt.Println(stringutils.IsBlank("  "))  // true
+	fmt.Println(stringutils.Trim("  hello  "))  // "hello"
+	
+	// Time utilities
+	now := timeutils.Now()
+	fmt.Println(timeutils.FormatTime(now, timeutils.DefaultDateTimeFormat))
+	
+	// Config utilities
+	config := configutils.NewConfig()
+	config.Set("app.name", "MyApp")
+	fmt.Println(config.GetString("app.name", ""))  // "MyApp"
+}
+```
+
+## Package Overview
+
+This library is organized into the following packages:
+
+- **`stringutils`** - String manipulation and validation utilities
+- **`timeutils`** - Time and date operations, formatting, and calculations
+- **`fileutils`** - File and directory operations, path utilities
+- **`sliceutils`** - Slice operations: deduplication, filtering, pagination, sorting
+- **`jsonutils`** - JSON formatting and validation
+- **`convertutils`** - Type conversion and deep copying
+- **`errorutils`** - Error wrapping, stack traces, and error classification
+- **`configutils`** - Configuration management with JSON and environment variable support
+- **`concurrentutils`** - Concurrency utilities: worker pools, rate limiting, safe counters and caches
+- **`systemutils`** - System monitoring: CPU, memory, and disk utilities
+  - `cpuutils` - CPU information and usage
+  - `memutils` - Memory information
+  - `diskutils` - Disk space information
+
 ## Development
 
 ### Auto-formatting
@@ -233,6 +279,121 @@ func main() {
 }
 ```
 
+### Time Utilities
+
+```go
+package main
+
+import (
+	"fmt"
+	"time"
+	"github.com/Rodert/go-commons/timeutils"
+)
+
+func main() {
+	now := time.Now()
+	
+	// Formatting
+	fmt.Println(timeutils.FormatTime(now, timeutils.DefaultDateTimeFormat))
+	
+	// Calculations
+	tomorrow := timeutils.AddDays(now, 1)
+	nextMonth := timeutils.AddMonths(now, 1)
+	
+	// Relative time
+	fmt.Println(timeutils.TimeAgo(now.Add(-2 * time.Hour)))  // "2小时前"
+	
+	// Time checks
+	fmt.Println(timeutils.IsToday(now))  // true
+	fmt.Println(timeutils.IsWeekend(now))  // depends on day
+}
+```
+
+### File Utilities
+
+```go
+package main
+
+import (
+	"fmt"
+	"github.com/Rodert/go-commons/fileutils"
+)
+
+func main() {
+	// Read file
+	content, _ := fileutils.ReadFile("config.json")
+	
+	// Write file
+	fileutils.WriteFile("output.txt", []byte("Hello World"))
+	
+	// File operations
+	if fileutils.Exists("file.txt") {
+		fileutils.Copy("file.txt", "file_copy.txt")
+	}
+	
+	// Path utilities
+	base := fileutils.BaseName("/path/to/file.txt")  // "file.txt"
+	dir := fileutils.DirName("/path/to/file.txt")    // "/path/to"
+}
+```
+
+### Slice Utilities
+
+```go
+package main
+
+import (
+	"fmt"
+	"github.com/Rodert/go-commons/sliceutils"
+)
+
+func main() {
+	// Deduplication
+	nums := []int{1, 2, 2, 3, 3, 3}
+	unique := sliceutils.UniqueInt(nums)  // [1, 2, 3]
+	
+	// Filter
+	even := sliceutils.Filter(nums, func(n int) bool {
+		return n%2 == 0
+	})
+	
+	// Pagination
+	page := sliceutils.PaginateInt(nums, 1, 2)  // page 1, size 2
+	
+	// Set operations
+	a := []int{1, 2, 3}
+	b := []int{2, 3, 4}
+	intersection := sliceutils.Intersection(a, b)  // [2, 3]
+}
+```
+
+### JSON/Convert Utilities
+
+```go
+package main
+
+import (
+	"fmt"
+	"github.com/Rodert/go-commons/jsonutils"
+	"github.com/Rodert/go-commons/convertutils"
+)
+
+func main() {
+	// JSON formatting
+	jsonStr := `{"name":"John","age":30}`
+	pretty, _ := jsonutils.PrettyJSON(jsonStr)
+	fmt.Println(pretty)
+	
+	// Type conversion
+	num := convertutils.StringToInt("123", 0)  // 123
+	str := convertutils.IntToString(456)       // "456"
+	
+	// Deep copy
+	original := map[string]interface{}{"key": "value"}
+	copied := convertutils.DeepCopy(original)
+}
+```
+
 ### System Utilities
 
 ```go
@@ -277,8 +438,19 @@ func main() {
 
 ## Examples
 
-- See `stringutils/stringutils_test.go` for a wide range of covered behaviors.
-- Check the `examples/` directory for runnable samples.
+Comprehensive examples are available in the `examples/` directory:
+
+- `examples/stringutils/` - String manipulation examples
+- `examples/timeutils/` - Time and date operations
+- `examples/fileutils/` - File and directory operations
+- `examples/sliceutils/` - Slice operations and functional programming
+- `examples/jsonutils/` - JSON processing examples
+- `examples/configutils/` - Configuration management
+- `examples/errorutils/` - Error handling patterns
+- `examples/concurrentutils/` - Concurrency utilities
+- `examples/systemutils/` - System monitoring
+
+You can also check the test files (e.g., `*_test.go`) for more usage examples.
 
 ## Testing
 
@@ -306,15 +478,34 @@ make help
 
 ## Principles
 
-1. Prefer the standard library over third‑party dependencies
-2. Keep APIs small, clear, and well‑tested
+1. **Minimal dependencies**: Prefer the standard library over third‑party dependencies
+2. **Simple APIs**: Keep APIs small, clear, and well‑tested
+3. **Cross-platform**: Support Linux, macOS, and Windows
+4. **Well-documented**: Comprehensive documentation with examples
+5. **Production-ready**: Thoroughly tested with high code coverage
+
+## Performance
+
+All utilities are designed for performance:
+- Zero or minimal allocations where possible
+- Efficient algorithms (e.g., O(n) for most operations)
+- Thread-safe implementations using atomic operations and sync primitives
+- No reflection overhead in hot paths
+
+## License
+
+This project is licensed under the [Unlicense](LICENSE) - see the LICENSE file for details.
 
 ## Roadmap
 
-- Enhance `systemutils` packages with more detailed metrics and monitoring capabilities
-- Add more examples under `examples/`
-- Improve cross-platform compatibility and testing
-- Add more string manipulation utilities
+- [ ] HTTP utilities enhancement (URL builder, query parsing, retry mechanism)
+- [ ] Encoding/decoding utilities (URL, HTML, Hex)
+- [ ] Math utilities (precise float calculations, random numbers, percentage)
+- [ ] Reflection utilities (struct field manipulation, tag parsing)
+- [ ] Logging utilities (structured logging, log rotation, colored output)
+- [ ] Enhance `systemutils` packages with more detailed metrics
+- [ ] Add more examples and use cases
+- [ ] Improve cross-platform compatibility and testing
 
 ## Development Timeline
 

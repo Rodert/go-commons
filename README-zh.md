@@ -76,6 +76,52 @@
 go get github.com/Rodert/go-commons
 ```
 
+## 快速开始
+
+```go
+package main
+
+import (
+	"fmt"
+	"github.com/Rodert/go-commons/stringutils"
+	"github.com/Rodert/go-commons/timeutils"
+	"github.com/Rodert/go-commons/configutils"
+)
+
+func main() {
+	// 字符串工具
+	fmt.Println(stringutils.IsBlank("  "))  // true
+	fmt.Println(stringutils.Trim("  hello  "))  // "hello"
+	
+	// 时间工具
+	now := timeutils.Now()
+	fmt.Println(timeutils.FormatTime(now, timeutils.DefaultDateTimeFormat))
+	
+	// 配置工具
+	config := configutils.NewConfig()
+	config.Set("app.name", "MyApp")
+	fmt.Println(config.GetString("app.name", ""))  // "MyApp"
+}
+```
+
+## 包概览
+
+本库包含以下包：
+
+- **`stringutils`** - 字符串操作和验证工具
+- **`timeutils`** - 时间和日期操作、格式化和计算
+- **`fileutils`** - 文件和目录操作、路径工具
+- **`sliceutils`** - 切片操作：去重、过滤、分页、排序
+- **`jsonutils`** - JSON格式化和验证
+- **`convertutils`** - 类型转换和深拷贝
+- **`errorutils`** - 错误包装、堆栈跟踪和错误分类
+- **`configutils`** - 配置管理，支持JSON和环境变量
+- **`concurrentutils`** - 并发工具：工作池、限流器、安全计数器和缓存
+- **`systemutils`** - 系统监控：CPU、内存和磁盘工具
+  - `cpuutils` - CPU信息和使用率
+  - `memutils` - 内存信息
+  - `diskutils` - 磁盘空间信息
+
 ## 开发
 
 ### 自动格式化
@@ -233,6 +279,121 @@ func main() {
 }
 ```
 
+### 时间工具
+
+```go
+package main
+
+import (
+	"fmt"
+	"time"
+	"github.com/Rodert/go-commons/timeutils"
+)
+
+func main() {
+	now := time.Now()
+	
+	// 格式化
+	fmt.Println(timeutils.FormatTime(now, timeutils.DefaultDateTimeFormat))
+	
+	// 计算
+	tomorrow := timeutils.AddDays(now, 1)
+	nextMonth := timeutils.AddMonths(now, 1)
+	
+	// 相对时间
+	fmt.Println(timeutils.TimeAgo(now.Add(-2 * time.Hour)))  // "2小时前"
+	
+	// 时间判断
+	fmt.Println(timeutils.IsToday(now))  // true
+	fmt.Println(timeutils.IsWeekend(now))  // 取决于日期
+}
+```
+
+### 文件工具
+
+```go
+package main
+
+import (
+	"fmt"
+	"github.com/Rodert/go-commons/fileutils"
+)
+
+func main() {
+	// 读取文件
+	content, _ := fileutils.ReadFile("config.json")
+	
+	// 写入文件
+	fileutils.WriteFile("output.txt", []byte("Hello World"))
+	
+	// 文件操作
+	if fileutils.Exists("file.txt") {
+		fileutils.Copy("file.txt", "file_copy.txt")
+	}
+	
+	// 路径工具
+	base := fileutils.BaseName("/path/to/file.txt")  // "file.txt"
+	dir := fileutils.DirName("/path/to/file.txt")    // "/path/to"
+}
+```
+
+### 切片工具
+
+```go
+package main
+
+import (
+	"fmt"
+	"github.com/Rodert/go-commons/sliceutils"
+)
+
+func main() {
+	// 去重
+	nums := []int{1, 2, 2, 3, 3, 3}
+	unique := sliceutils.UniqueInt(nums)  // [1, 2, 3]
+	
+	// 过滤
+	even := sliceutils.Filter(nums, func(n int) bool {
+		return n%2 == 0
+	})
+	
+	// 分页
+	page := sliceutils.PaginateInt(nums, 1, 2)  // 第1页，每页2条
+	
+	// 集合操作
+	a := []int{1, 2, 3}
+	b := []int{2, 3, 4}
+	intersection := sliceutils.Intersection(a, b)  // [2, 3]
+}
+```
+
+### JSON/转换工具
+
+```go
+package main
+
+import (
+	"fmt"
+	"github.com/Rodert/go-commons/jsonutils"
+	"github.com/Rodert/go-commons/convertutils"
+)
+
+func main() {
+	// JSON格式化
+	jsonStr := `{"name":"John","age":30}`
+	pretty, _ := jsonutils.PrettyJSON(jsonStr)
+	fmt.Println(pretty)
+	
+	// 类型转换
+	num := convertutils.StringToInt("123", 0)  // 123
+	str := convertutils.IntToString(456)       // "456"
+	
+	// 深拷贝
+	original := map[string]interface{}{"key": "value"}
+	copied := convertutils.DeepCopy(original)
+}
+```
+
 ### 系统工具
 
 ```go
@@ -277,8 +438,19 @@ func main() {
 
 ## 示例
 
-- 参考 `stringutils/stringutils_test.go` 获取更多覆盖的行为示例。
-- 查看 `examples/` 目录获取可运行示例。
+`examples/` 目录提供了全面的示例：
+
+- `examples/stringutils/` - 字符串操作示例
+- `examples/timeutils/` - 时间和日期操作
+- `examples/fileutils/` - 文件和目录操作
+- `examples/sliceutils/` - 切片操作和函数式编程
+- `examples/jsonutils/` - JSON处理示例
+- `examples/configutils/` - 配置管理
+- `examples/errorutils/` - 错误处理模式
+- `examples/concurrentutils/` - 并发工具
+- `examples/systemutils/` - 系统监控
+
+您也可以查看测试文件（如 `*_test.go`）获取更多使用示例。
 
 ## 测试
 
@@ -306,15 +478,34 @@ make help
 
 ## 原则
 
-1. 优先使用标准库，尽量避免第三方依赖
-2. 保持 API 简洁、清晰并配套测试
+1. **最小依赖**：优先使用标准库，尽量避免第三方依赖
+2. **简洁API**：保持 API 简洁、清晰并配套测试
+3. **跨平台**：支持 Linux、macOS 和 Windows
+4. **完善文档**：提供全面的文档和示例
+5. **生产就绪**：经过充分测试，代码覆盖率高
+
+## 性能
+
+所有工具都针对性能进行了优化：
+- 尽可能减少或避免内存分配
+- 高效的算法（大多数操作为 O(n)）
+- 使用原子操作和同步原语的线程安全实现
+- 在热点路径中避免反射开销
+
+## 许可证
+
+本项目采用 [Unlicense](LICENSE) 许可证 - 详见 LICENSE 文件。
 
 ## 规划
 
-- 增强 `systemutils` 包的详细指标和监控能力
-- 在 `examples/` 中补充可运行示例
-- 改进跨平台兼容性和测试
-- 添加更多字符串操作工具
+- [ ] HTTP工具增强（URL构建器、查询参数解析、重试机制）
+- [ ] 编码/解码工具（URL、HTML、Hex）
+- [ ] 数学工具（精确浮点计算、随机数、百分比）
+- [ ] 反射工具（结构体字段操作、标签解析）
+- [ ] 日志工具（结构化日志、日志轮转、彩色输出）
+- [ ] 增强 `systemutils` 包的详细指标
+- [ ] 添加更多示例和使用场景
+- [ ] 改进跨平台兼容性和测试
 
 ## 开发时间线
 

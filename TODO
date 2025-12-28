@@ -1,4 +1,86 @@
+## 开发原则 (Development Principles)
 1. 完善 README 和 README-zh
 2. 记录开发的所有功能和时间线
 3. 尽可能不使用第三方依赖
 4. 完善测试用例和examples
+
+## 功能开发计划 (Feature Development Plan)
+
+### 高优先级 (High Priority) - 常用且容易实现
+- [x] 1. 时间/日期工具 (timeutils/dateutils) - 已完成
+  - [x] 时间格式化 (FormatTime, ParseTime)
+  - [x] 时间计算 (AddDays, AddMonths, AddYears, DaysBetween等)
+  - [x] 相对时间 (TimeAgo, TimeAgoEn)
+  - [x] 时间范围 (Today, ThisWeek, ThisMonth等)
+  - [x] 时区转换 (ToTimezone, ToUTC)
+  - [x] 时间判断 (IsToday, IsWeekend, IsWeekday)
+
+- [ ] 2. 文件/IO工具 (fileutils/ioutils)
+  - [ ] 文件读写封装 (ReadFile, WriteFile, ReadFileLines等)
+  - [ ] 目录遍历和文件查找 (WalkDir, FindFiles等)
+  - [ ] 文件/目录操作 (Copy, Move, Delete, Exists等)
+  - [ ] 文件大小格式化 (FormatFileSize)
+  - [ ] 路径处理 (JoinPath, CleanPath, BaseName, DirName等)
+  - [ ] 文件类型检测 (GetFileType, IsDir, IsFile等)
+
+- [ ] 3. 集合/切片工具 (sliceutils/collectionutils)
+  - [ ] 切片去重 (Unique, UniqueBy)
+  - [ ] 切片过滤、映射、归约 (Filter, Map, Reduce)
+  - [ ] 切片分页 (Paginate)
+  - [ ] 切片集合操作 (Intersection, Union, Difference)
+  - [ ] 切片排序 (Sort, SortBy)
+
+- [ ] 4. JSON/数据转换工具 (jsonutils/convertutils)
+  - [ ] JSON美化/压缩 (PrettyJSON, CompactJSON)
+  - [ ] Map与Struct互转 (MapToStruct, StructToMap)
+  - [ ] 类型转换 (StringToInt, IntToString, FloatToString等)
+  - [ ] 深拷贝 (DeepCopy)
+
+### 中优先级 (Medium Priority) - 实用性强
+- [ ] 5. 错误处理工具 (errorutils)
+  - [ ] 错误包装和链式错误 (Wrap, Wrapf, WithStack)
+  - [ ] 错误堆栈跟踪 (StackTrace)
+  - [ ] 错误分类和匹配 (IsType, IsCode)
+  - [ ] 错误消息格式化 (FormatError)
+
+- [ ] 6. 配置工具 (configutils)
+  - [ ] 配置文件读取 (YAML, JSON, TOML, 环境变量)
+  - [ ] 配置值解析和验证
+  - [ ] 配置默认值处理
+
+- [ ] 7. 并发工具 (concurrentutils)
+  - [ ] Worker Pool (WorkerPool)
+  - [ ] 限流器 (RateLimiter)
+  - [ ] 并发安全的计数器/累加器 (SafeCounter)
+  - [ ] 并发安全的缓存 (SafeCache)
+
+### 低优先级 (Low Priority) - 已有部分功能，可扩展
+- [ ] 8. HTTP工具增强 (netutils扩展)
+  - [ ] URL构建器 (URLBuilder)
+  - [ ] Query参数解析和构建 (ParseQuery, BuildQuery)
+  - [ ] Cookie处理增强
+  - [ ] 重试机制 (Retry)
+  - [ ] 请求/响应拦截器
+
+- [ ] 9. 编码/解码工具增强
+  - [ ] URL编码/解码 (URLEncode, URLDecode)
+  - [ ] HTML编码/解码 (HTMLEncode, HTMLDecode)
+  - [ ] Hex编码/解码扩展
+
+- [ ] 10. 数学/计算工具 (mathutils)
+  - [ ] 精确的浮点数计算
+  - [ ] 随机数生成 (RandomInt, RandomFloat)
+  - [ ] 百分比计算 (Percentage, FormatPercent)
+  - [ ] 数值格式化 (FormatNumber)
+
+### 扩展功能 (Extended Features)
+- [ ] 11. 反射工具 (reflectutils)
+  - [ ] Struct字段获取和设置 (GetField, SetField)
+  - [ ] Struct标签解析 (ParseTags)
+  - [ ] 类型判断和转换
+
+- [ ] 12. 日志工具 (logutils) - 基于标准库
+  - [ ] 结构化日志格式化
+  - [ ] 日志级别管理
+  - [ ] 日志文件轮转
+  - [ ] 彩色日志输出 (终端)

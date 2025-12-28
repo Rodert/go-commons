@@ -38,22 +38,22 @@
   - [x] JSON验证和合并 (IsValidJSON, MergeJSON)
 
 ### 中优先级 (Medium Priority) - 实用性强
-- [ ] 5. 错误处理工具 (errorutils)
-  - [ ] 错误包装和链式错误 (Wrap, Wrapf, WithStack)
-  - [ ] 错误堆栈跟踪 (StackTrace)
-  - [ ] 错误分类和匹配 (IsType, IsCode)
-  - [ ] 错误消息格式化 (FormatError)
+- [x] 5. 错误处理工具 (errorutils) - 已完成
+  - [x] 错误包装和链式错误 (Wrap, Wrapf, WithStack)
+  - [x] 错误堆栈跟踪 (StackTrace)
+  - [x] 错误分类和匹配 (IsType, IsCode)
+  - [x] 错误消息格式化 (FormatError)
 
-- [ ] 6. 配置工具 (configutils)
-  - [ ] 配置文件读取 (YAML, JSON, TOML, 环境变量)
-  - [ ] 配置值解析和验证
-  - [ ] 配置默认值处理
+- [x] 6. 配置工具 (configutils) - 已完成
+  - [x] 配置文件读取 (JSON, 环境变量)
+  - [x] 配置值解析和验证
+  - [x] 配置默认值处理
 
-- [ ] 7. 并发工具 (concurrentutils)
-  - [ ] Worker Pool (WorkerPool)
-  - [ ] 限流器 (RateLimiter)
-  - [ ] 并发安全的计数器/累加器 (SafeCounter)
-  - [ ] 并发安全的缓存 (SafeCache)
+- [x] 7. 并发工具 (concurrentutils) - 已完成
+  - [x] Worker Pool (WorkerPool)
+  - [x] 限流器 (RateLimiter)
+  - [x] 并发安全的计数器/累加器 (SafeCounter)
+  - [x] 并发安全的缓存 (SafeCache)
 
 ### 低优先级 (Low Priority) - 已有部分功能，可扩展
 - [ ] 8. HTTP工具增强 (netutils扩展)

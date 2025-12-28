@@ -8,7 +8,7 @@
 [![Go Lint](https://github.com/Rodert/go-commons/actions/workflows/go-lint.yml/badge.svg)](https://github.com/Rodert/go-commons/actions/workflows/go-lint.yml)
 [![codecov](https://codecov.io/gh/Rodert/go-commons/branch/main/graph/badge.svg)](https://codecov.io/gh/Rodert/go-commons)
 
-A small collection of Go utility packages focused on string helpers and basic system utilities, with minimal third‑party dependencies.
+A comprehensive collection of Go utility packages with minimal third‑party dependencies, providing essential tools for common development tasks.
 
 ## Features
 
@@ -20,6 +20,46 @@ A small collection of Go utility packages focused on string helpers and basic sy
   - Replace and join: `Join`, `Split`, `Replace`, `ReplaceAll`, `Repeat`
   - Padding and centering: `PadLeft`, `PadRight`, `Center`
   - Misc: `Truncate`, `TruncateWithSuffix`, `CountMatches`, `DefaultIfEmpty`, `DefaultIfBlank`
+- **Time utilities (`timeutils`)**:
+  - Time formatting and parsing: `FormatTime`, `ParseTime`
+  - Time calculations: `AddDays`, `AddMonths`, `AddYears`, `DaysBetween`, `HoursBetween`, `MinutesBetween`
+  - Relative time: `TimeAgo`, `TimeAgoEn`
+  - Time ranges: `Today`, `ThisWeek`, `ThisMonth`, `ThisYear`
+  - Timezone conversion: `ToTimezone`, `ToUTC`
+  - Time checks: `IsToday`, `IsWeekend`, `IsWeekday`
+- **File utilities (`fileutils`)**:
+  - File I/O: `ReadFile`, `WriteFile`, `ReadFileLines`
+  - Directory operations: `WalkDir`, `FindFiles`
+  - File operations: `Copy`, `Move`, `Delete`, `Exists`
+  - Path utilities: `JoinPath`, `CleanPath`, `BaseName`, `DirName`
+  - File type detection: `GetFileType`, `IsDir`, `IsFile`
+- **Slice utilities (`sliceutils`)**:
+  - Deduplication: `Unique`, `UniqueInt`, `UniqueString`
+  - Functional operations: `Filter`, `Map`, `Reduce`
+  - Pagination: `Paginate`, `PaginateInt`
+  - Set operations: `Intersection`, `Union`, `Difference`
+  - Sorting: `Sort`, `SortInt`, `SortString`, `SortIntDesc`, `SortStringDesc`
+- **JSON/Convert utilities (`jsonutils`, `convertutils`)**:
+  - JSON formatting: `PrettyJSON`, `CompactJSON`
+  - Type conversion: `MapToStruct`, `StructToMap`, `StringToInt`, `IntToString`, `FloatToString`
+  - Deep copy: `DeepCopy`
+  - JSON validation and merging: `IsValidJSON`, `MergeJSON`
+- **Error utilities (`errorutils`)**:
+  - Error wrapping: `Wrap`, `Wrapf`, `WithStack`
+  - Stack trace: `StackTrace`
+  - Error classification: `IsType`, `IsCode`, `GetType`, `GetCode`
+  - Error formatting: `FormatError`
+- **Config utilities (`configutils`)**:
+  - Configuration loading: `LoadFromJSON`, `LoadFromJSONString`, `LoadFromEnv`
+  - Type-safe getters: `GetString`, `GetInt`, `GetFloat`, `GetBool`, `GetStringSlice`
+  - Configuration management: `Set`, `Get`, `Has`, `Merge`, `SetDefaults`
+  - Validation: `Validate`
+  - Struct unmarshaling: `Unmarshal`
+- **Concurrent utilities (`concurrentutils`)**:
+  - Worker pool: `WorkerPool` - manage concurrent task execution
+  - Rate limiter: `RateLimiter` - control request rate with token bucket algorithm
+  - Safe counter: `SafeCounter` - thread-safe counter with atomic operations
+  - Safe cache: `SafeCache` - thread-safe in-memory cache with lazy loading
 - **System utilities (`systemutils`)**:
   - CPU utilities (`cpuutils`): `GetCPUInfo` - retrieve CPU cores, usage percentage, and load averages
   - Memory utilities (`memutils`): `GetMemInfo` - get total, available, and used memory
@@ -100,6 +140,96 @@ func main() {
 	fmt.Println(stringutils.Reverse("hello"))         // "olleh"
 	fmt.Println(stringutils.SwapCase("Hello World"))  // "hELLO wORLD"
 	fmt.Println(stringutils.PadCenter("hello", 9, '*')) // "**hello**"
+}
+```
+
+### Error Utilities
+
+```go
+package main
+
+import (
+	"errors"
+	"fmt"
+	"github.com/Rodert/go-commons/errorutils"
+)
+
+func main() {
+	// Wrap errors with context
+	err := errors.New("file not found")
+	wrapped := errorutils.Wrap(err, "failed to read config")
+	
+	// Check error type
+	if errorutils.IsType(wrapped, errorutils.ErrorTypeInternal) {
+		fmt.Println("Internal error")
+	}
+	
+	// Format error with stack trace
+	fmt.Println(errorutils.FormatError(wrapped, true))
+}
+```
+
+### Config Utilities
+
+```go
+package main
+
+import (
+	"fmt"
+	"github.com/Rodert/go-commons/configutils"
+)
+
+func main() {
+	// Load from JSON
+	config, _ := configutils.LoadConfigFromJSON("config.json")
+	
+	// Get values with defaults
+	host := config.GetString("database.host", "localhost")
+	port := config.GetInt("database.port", 3306)
+	debug := config.GetBool("app.debug", false)
+	
+	// Load from environment variables
+	envConfig := configutils.LoadConfigFromEnv("APP_")
+	fmt.Println(envConfig.GetString("name", "default"))
+}
+```
+
+### Concurrent Utilities
+
+```go
+package main
+
+import (
+	"fmt"
+	"github.com/Rodert/go-commons/concurrentutils"
+)
+
+func main() {
+	// Worker pool
+	pool := concurrentutils.NewWorkerPool(10)
+	pool.Start()
+	defer pool.Stop()
+	
+	pool.Submit(func() {
+		fmt.Println("Task executed")
+	})
+	
+	// Rate limiter
+	limiter := concurrentutils.NewRateLimiter(100) // 100 req/s
+	if limiter.Allow() {
+		// Process request
+	}
+	
+	// Safe counter
+	counter := concurrentutils.NewSafeCounter(0)
+	counter.Increment(1)
+	fmt.Println(counter.Get())
+	
+	// Safe cache
+	cache := concurrentutils.NewSafeCache()
+	cache.Set("key", "value")
+	val, _ := cache.Get("key")
+	fmt.Println(val)
 }
 ```
 
@@ -195,6 +325,14 @@ make help
   - Added cross-platform support (Linux, macOS, Windows)
   - Created examples and comprehensive documentation
   - Added string transformation functions (`Reverse`, `SwapCase`, `PadCenter`)
+- **2025-01-XX**: 
+  - Added time utilities (`timeutils`) - time formatting, calculations, timezone conversion
+  - Added file utilities (`fileutils`) - file I/O, directory operations, path utilities
+  - Added slice utilities (`sliceutils`) - deduplication, functional operations, pagination, sorting
+  - Added JSON/Convert utilities (`jsonutils`, `convertutils`) - JSON formatting, type conversion, deep copy
+  - Added error utilities (`errorutils`) - error wrapping, stack trace, error classification
+  - Added config utilities (`configutils`) - configuration loading, validation, type-safe access
+  - Added concurrent utilities (`concurrentutils`) - worker pool, rate limiter, safe counter, safe cache
 
 ## Contributing
 

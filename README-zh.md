@@ -8,7 +8,7 @@
 [![Go Lint](https://github.com/Rodert/go-commons/actions/workflows/go-lint.yml/badge.svg)](https://github.com/Rodert/go-commons/actions/workflows/go-lint.yml)
 [![codecov](https://codecov.io/gh/Rodert/go-commons/branch/main/graph/badge.svg)](https://codecov.io/gh/Rodert/go-commons)
 
-一组精简的 Go 实用工具包，包含字符串工具与基础系统工具，尽量不依赖第三方库。
+一组全面的 Go 实用工具包，尽量不依赖第三方库，为常见开发任务提供必要的工具。
 
 ## 特性
 
@@ -20,6 +20,46 @@
   - 替换与连接：`Join`、`Split`、`Replace`、`ReplaceAll`、`Repeat`
   - 填充与居中：`PadLeft`、`PadRight`、`Center`
   - 其他：`Truncate`、`TruncateWithSuffix`、`CountMatches`、`DefaultIfEmpty`、`DefaultIfBlank`
+- **时间工具（`timeutils`）**：
+  - 时间格式化与解析：`FormatTime`、`ParseTime`
+  - 时间计算：`AddDays`、`AddMonths`、`AddYears`、`DaysBetween`、`HoursBetween`、`MinutesBetween`
+  - 相对时间：`TimeAgo`、`TimeAgoEn`
+  - 时间范围：`Today`、`ThisWeek`、`ThisMonth`、`ThisYear`
+  - 时区转换：`ToTimezone`、`ToUTC`
+  - 时间判断：`IsToday`、`IsWeekend`、`IsWeekday`
+- **文件工具（`fileutils`）**：
+  - 文件读写：`ReadFile`、`WriteFile`、`ReadFileLines`
+  - 目录操作：`WalkDir`、`FindFiles`
+  - 文件操作：`Copy`、`Move`、`Delete`、`Exists`
+  - 路径工具：`JoinPath`、`CleanPath`、`BaseName`、`DirName`
+  - 文件类型检测：`GetFileType`、`IsDir`、`IsFile`
+- **切片工具（`sliceutils`）**：
+  - 去重：`Unique`、`UniqueInt`、`UniqueString`
+  - 函数式操作：`Filter`、`Map`、`Reduce`
+  - 分页：`Paginate`、`PaginateInt`
+  - 集合操作：`Intersection`、`Union`、`Difference`
+  - 排序：`Sort`、`SortInt`、`SortString`、`SortIntDesc`、`SortStringDesc`
+- **JSON/转换工具（`jsonutils`、`convertutils`）**：
+  - JSON格式化：`PrettyJSON`、`CompactJSON`
+  - 类型转换：`MapToStruct`、`StructToMap`、`StringToInt`、`IntToString`、`FloatToString`
+  - 深拷贝：`DeepCopy`
+  - JSON验证与合并：`IsValidJSON`、`MergeJSON`
+- **错误处理工具（`errorutils`）**：
+  - 错误包装：`Wrap`、`Wrapf`、`WithStack`
+  - 堆栈跟踪：`StackTrace`
+  - 错误分类：`IsType`、`IsCode`、`GetType`、`GetCode`
+  - 错误格式化：`FormatError`
+- **配置工具（`configutils`）**：
+  - 配置加载：`LoadFromJSON`、`LoadFromJSONString`、`LoadFromEnv`
+  - 类型安全访问：`GetString`、`GetInt`、`GetFloat`、`GetBool`、`GetStringSlice`
+  - 配置管理：`Set`、`Get`、`Has`、`Merge`、`SetDefaults`
+  - 配置验证：`Validate`
+  - 结构体解析：`Unmarshal`
+- **并发工具（`concurrentutils`）**：
+  - 工作池：`WorkerPool` - 管理并发任务执行
+  - 限流器：`RateLimiter` - 使用令牌桶算法控制请求速率
+  - 安全计数器：`SafeCounter` - 使用原子操作的线程安全计数器
+  - 安全缓存：`SafeCache` - 支持懒加载的线程安全内存缓存
 - **系统工具（`systemutils`）**：
   - CPU工具（`cpuutils`）：`GetCPUInfo` - 获取CPU核心数、使用率百分比和负载平均值
   - 内存工具（`memutils`）：`GetMemInfo` - 获取总内存、可用内存和已用内存
@@ -100,6 +140,96 @@ func main() {
 	fmt.Println(stringutils.Reverse("hello"))         // "olleh"
 	fmt.Println(stringutils.SwapCase("Hello World"))  // "hELLO wORLD"
 	fmt.Println(stringutils.PadCenter("hello", 9, '*')) // "**hello**"
+}
+```
+
+### 错误处理工具
+
+```go
+package main
+
+import (
+	"errors"
+	"fmt"
+	"github.com/Rodert/go-commons/errorutils"
+)
+
+func main() {
+	// 包装错误并添加上下文
+	err := errors.New("file not found")
+	wrapped := errorutils.Wrap(err, "failed to read config")
+	
+	// 检查错误类型
+	if errorutils.IsType(wrapped, errorutils.ErrorTypeInternal) {
+		fmt.Println("内部错误")
+	}
+	
+	// 格式化错误（包含堆栈跟踪）
+	fmt.Println(errorutils.FormatError(wrapped, true))
+}
+```
+
+### 配置工具
+
+```go
+package main
+
+import (
+	"fmt"
+	"github.com/Rodert/go-commons/configutils"
+)
+
+func main() {
+	// 从JSON加载配置
+	config, _ := configutils.LoadConfigFromJSON("config.json")
+	
+	// 获取值（带默认值）
+	host := config.GetString("database.host", "localhost")
+	port := config.GetInt("database.port", 3306)
+	debug := config.GetBool("app.debug", false)
+	
+	// 从环境变量加载配置
+	envConfig := configutils.LoadConfigFromEnv("APP_")
+	fmt.Println(envConfig.GetString("name", "default"))
+}
+```
+
+### 并发工具
+
+```go
+package main
+
+import (
+	"fmt"
+	"github.com/Rodert/go-commons/concurrentutils"
+)
+
+func main() {
+	// 工作池
+	pool := concurrentutils.NewWorkerPool(10)
+	pool.Start()
+	defer pool.Stop()
+	
+	pool.Submit(func() {
+		fmt.Println("任务执行")
+	})
+	
+	// 限流器
+	limiter := concurrentutils.NewRateLimiter(100) // 每秒100个请求
+	if limiter.Allow() {
+		// 处理请求
+	}
+	
+	// 安全计数器
+	counter := concurrentutils.NewSafeCounter(0)
+	counter.Increment(1)
+	fmt.Println(counter.Get())
+	
+	// 安全缓存
+	cache := concurrentutils.NewSafeCache()
+	cache.Set("key", "value")
+	val, _ := cache.Get("key")
+	fmt.Println(val)
 }
 ```
 
@@ -195,6 +325,14 @@ make help
   - 添加跨平台支持（Linux、macOS、Windows）
   - 创建示例和完善文档
   - 添加字符串转换函数（`Reverse`、`SwapCase`、`PadCenter`）
+- **2025-01-XX**: 
+  - 添加时间工具（`timeutils`）- 时间格式化、计算、时区转换
+  - 添加文件工具（`fileutils`）- 文件I/O、目录操作、路径工具
+  - 添加切片工具（`sliceutils`）- 去重、函数式操作、分页、排序
+  - 添加JSON/转换工具（`jsonutils`、`convertutils`）- JSON格式化、类型转换、深拷贝
+  - 添加错误处理工具（`errorutils`）- 错误包装、堆栈跟踪、错误分类
+  - 添加配置工具（`configutils`）- 配置加载、验证、类型安全访问
+  - 添加并发工具（`concurrentutils`）- 工作池、限流器、安全计数器、安全缓存
 
 ## 贡献
 

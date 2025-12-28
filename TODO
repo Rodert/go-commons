@@ -15,26 +15,27 @@
   - [x] 时区转换 (ToTimezone, ToUTC)
   - [x] 时间判断 (IsToday, IsWeekend, IsWeekday)
 
-- [ ] 2. 文件/IO工具 (fileutils/ioutils)
-  - [ ] 文件读写封装 (ReadFile, WriteFile, ReadFileLines等)
-  - [ ] 目录遍历和文件查找 (WalkDir, FindFiles等)
-  - [ ] 文件/目录操作 (Copy, Move, Delete, Exists等)
-  - [ ] 文件大小格式化 (FormatFileSize)
-  - [ ] 路径处理 (JoinPath, CleanPath, BaseName, DirName等)
-  - [ ] 文件类型检测 (GetFileType, IsDir, IsFile等)
+- [x] 2. 文件/IO工具 (fileutils/ioutils) - 已完成
+  - [x] 文件读写封装 (ReadFile, WriteFile, ReadFileLines等)
+  - [x] 目录遍历和文件查找 (WalkDir, FindFiles等)
+  - [x] 文件/目录操作 (Copy, Move, Delete, Exists等)
+  - [x] 文件大小格式化 (FormatFileSize)
+  - [x] 路径处理 (JoinPath, CleanPath, BaseName, DirName等)
+  - [x] 文件类型检测 (GetFileType, IsDir, IsFile等)
 
-- [ ] 3. 集合/切片工具 (sliceutils/collectionutils)
-  - [ ] 切片去重 (Unique, UniqueBy)
-  - [ ] 切片过滤、映射、归约 (Filter, Map, Reduce)
-  - [ ] 切片分页 (Paginate)
-  - [ ] 切片集合操作 (Intersection, Union, Difference)
-  - [ ] 切片排序 (Sort, SortBy)
+- [x] 3. 集合/切片工具 (sliceutils/collectionutils) - 已完成
+  - [x] 切片去重 (Unique, UniqueInt, UniqueString)
+  - [x] 切片过滤、映射、归约 (Filter, Map, Reduce)
+  - [x] 切片分页 (Paginate, PaginateInt)
+  - [x] 切片集合操作 (Intersection, Union, Difference)
+  - [x] 切片排序 (Sort, SortInt, SortString, SortIntDesc, SortStringDesc)
 
-- [ ] 4. JSON/数据转换工具 (jsonutils/convertutils)
-  - [ ] JSON美化/压缩 (PrettyJSON, CompactJSON)
-  - [ ] Map与Struct互转 (MapToStruct, StructToMap)
-  - [ ] 类型转换 (StringToInt, IntToString, FloatToString等)
-  - [ ] 深拷贝 (DeepCopy)
+- [x] 4. JSON/数据转换工具 (jsonutils/convertutils) - 已完成
+  - [x] JSON美化/压缩 (PrettyJSON, CompactJSON)
+  - [x] Map与Struct互转 (MapToStruct, StructToMap)
+  - [x] 类型转换 (StringToInt, IntToString, FloatToString等)
+  - [x] 深拷贝 (DeepCopy)
+  - [x] JSON验证和合并 (IsValidJSON, MergeJSON)
 
 ### 中优先级 (Medium Priority) - 实用性强
 - [ ] 5. 错误处理工具 (errorutils)

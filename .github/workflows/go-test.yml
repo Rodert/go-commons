@@ -22,8 +22,30 @@ jobs:
     - name: Get dependencies
       run: go mod download
 
-    - name: Run tests
-      run: make test
+    - name: Run tests with coverage
+      run: |
+        go test -v -coverprofile=coverage.out -covermode=atomic \
+          ./cryptutils/... \
+          ./netutils/... \
+          ./stringutils/... \
+          ./systemutils/... \
+          ./timeutils/... \
+          ./validationutils/...
 
-    - name: Run coverage
-      run: make cover
+    - name: Show coverage report
+      run: go tool cover -func=coverage.out
+
+    - name: Check minimum coverage
+      run: |
+        COVERAGE=$(go tool cover -func=coverage.out | grep total | awk '{print $3}' | sed 's/%//')
+        echo "Total coverage: ${COVERAGE}%"
+        # Extract the integer part (e.g., 49.9 -> 49)
+        COVERAGE_INT=${COVERAGE%.*}
+        MIN_COVERAGE=60
+        if [ "$COVERAGE_INT" -lt "$MIN_COVERAGE" ]; then
+          echo "⚠️  Coverage ${COVERAGE}% is below ${MIN_COVERAGE}% threshold"
+          exit 1
+        else
+          echo "✅ Coverage ${COVERAGE}% meets ${MIN_COVERAGE}% threshold"
+        fi
+      continue-on-error: true

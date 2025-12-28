@@ -50,16 +50,32 @@ func getCPUUsageDarwin() (float64, error) {
 				return 0, fmt.Errorf("unexpected format")
 			}
 			usageInfo := parts[1]
+			// 解析格式: "X% user, Y% sys, Z% idle"
+			var user, sys, idle float64
+			n, err := fmt.Sscanf(usageInfo, "%f%% user, %f%% sys, %f%% idle", &user, &sys, &idle)
+			
+			// 如果成功解析了所有三个值，计算总CPU使用率
+			if err == nil && n == 3 {
+				// 优先使用 100 - idle 来计算总使用率（更准确）
+				if idle >= 0 && idle <= 100 {
+					return 100.0 - idle, nil
+				}
+				// 如果idle值异常，使用 user + sys
+				if user >= 0 && sys >= 0 {
+					return user + sys, nil
+				}
+			}
+			
+			// 如果上面都失败，尝试旧的解析方式（向后兼容）
 			usageParts := strings.Split(usageInfo, "%")
-			if len(usageParts) < 1 {
-				return 0, fmt.Errorf("unexpected format")
+			if len(usageParts) >= 1 {
+				usageStr := strings.TrimSpace(usageParts[0])
+				usage, err := strconv.ParseFloat(usageStr, 64)
+				if err == nil {
+					return usage, nil
+				}
 			}
-			usageStr := strings.TrimSpace(usageParts[0])
-			usage, err := strconv.ParseFloat(usageStr, 64)
-			if err != nil {
-				return 0, err
-			}
-			return usage, nil
+			return 0, fmt.Errorf("unexpected format: %s", usageInfo)
 		}
 	}
 

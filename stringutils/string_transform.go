@@ -3,6 +3,7 @@ package stringutils
 import (
 	"strings"
 	"unicode"
+	"unicode/utf8"
 )
 
 // Reverse 反转字符串
@@ -32,11 +33,15 @@ func SwapCase(str string) string {
 // PadCenter 在字符串两侧填充字符，使其居中
 // PadCenter pads a string on both sides with a specified character
 func PadCenter(str string, size int, padChar rune) string {
-	if len(str) >= size {
+	if size <= 0 {
+		return str
+	}
+	runeCount := utf8.RuneCountInString(str)
+	if runeCount >= size {
 		return str
 	}
 
-	padsNeeded := size - len(str)
+	padsNeeded := size - runeCount
 	padLeft := padsNeeded / 2
 	padRight := padsNeeded - padLeft
 

@@ -8,11 +8,13 @@ import (
 	"os"
 	"strconv"
 	"strings"
+	"sync"
 )
 
-// Config 配置接口，用于存储和管理配置
-// Config interface for storing and managing configuration
+// Config 配置对象，并发安全
+// Config is a thread-safe configuration store
 type Config struct {
+	mu   sync.RWMutex
 	data map[string]interface{}
 }
 
@@ -57,6 +59,8 @@ func (c *Config) LoadFromJSON(filepath string) error {
 		return fmt.Errorf("解析JSON失败: %w", err)
 	}
 
+	c.mu.Lock()
+	defer c.mu.Unlock()
 	c.data = jsonData
 	return nil
 }
@@ -79,6 +83,8 @@ func (c *Config) LoadFromJSONString(jsonStr string) error {
 		return fmt.Errorf("解析JSON失败: %w", err)
 	}
 
+	c.mu.Lock()
+	defer c.mu.Unlock()
 	c.data = jsonData
 	return nil
 }
@@ -86,16 +92,23 @@ func (c *Config) LoadFromJSONString(jsonStr string) error {
 // LoadFromEnv 从环境变量加载配置
 //
 // 参数 / Parameters:
-//   - prefix: 环境变量前缀，如果为空则加载所有环境变量 / environment variable prefix, empty to load all
+//   - prefix: 环境变量前缀，只加载匹配前缀的变量 / environment variable prefix, only loads matching vars
 //
 // 返回值 / Returns:
 //   - 无 / none
 //
 // 示例 / Example:
-//   config.LoadFromEnv("APP_")
+//   config.LoadFromEnv("APP_") // 只加载 APP_ 开头的环境变量
 //
-// LoadFromEnv loads configuration from environment variables
+// LoadFromEnv loads configuration from environment variables with the given prefix
 func (c *Config) LoadFromEnv(prefix string) {
+	if prefix == "" {
+		return // 必须指定前缀，避免污染配置
+	}
+
+	c.mu.Lock()
+	defer c.mu.Unlock()
+
 	envVars := os.Environ()
 	for _, env := range envVars {
 		parts := strings.SplitN(env, "=", 2)
@@ -106,27 +119,22 @@ func (c *Config) LoadFromEnv(prefix string) {
 		key := parts[0]
 		value := parts[1]
 
-		// 如果指定了前缀，只加载匹配的环境变量
-		// If prefix is specified, only load matching environment variables
-		if prefix != "" && !strings.HasPrefix(key, prefix) {
+		// 只加载匹配前缀的环境变量
+		// Only load matching environment variables
+		if !strings.HasPrefix(key, prefix) {
 			continue
 		}
 
-		// 移除前缀
-		// Remove prefix
-		if prefix != "" {
-			key = strings.TrimPrefix(key, prefix)
-		}
-
-		// 将键名转换为小写，并用点号分隔层级
-		// Convert key to lowercase and use dots to separate levels
+		// 移除前缀后再转换键名格式
+		// Remove prefix then convert key format
+		key = strings.TrimPrefix(key, prefix)
 		key = strings.ToLower(key)
 		key = strings.ReplaceAll(key, "_", ".")
 
 		// 尝试解析为数字或布尔值
 		// Try to parse as number or boolean
 		parsedValue := parseValue(value)
-		c.Set(key, parsedValue)
+		c.setNested(strings.Split(key, "."), parsedValue, c.data)
 	}
 }
 
@@ -173,6 +181,8 @@ func parseValue(value string) interface{} {
 //
 // Set sets a configuration value
 func (c *Config) Set(key string, value interface{}) {
+	c.mu.Lock()
+	defer c.mu.Unlock()
 	keys := strings.Split(key, ".")
 	c.setNested(keys, value, c.data)
 }
@@ -214,6 +224,8 @@ func (c *Config) setNested(keys []string, value interface{}, data map[string]int
 //
 // Get gets a configuration value
 func (c *Config) Get(key string) (interface{}, bool) {
+	c.mu.RLock()
+	defer c.mu.RUnlock()
 	keys := strings.Split(key, ".")
 	return c.getNested(keys, c.data)
 }
@@ -460,9 +472,9 @@ func (c *Config) Has(key string) bool {
 //
 // Unmarshal unmarshals configuration into a struct
 func (c *Config) Unmarshal(v interface{}) error {
-	// 将配置数据转换为JSON，然后解析到结构体
-	// Convert config data to JSON, then unmarshal into struct
+	c.mu.RLock()
 	jsonData, err := json.Marshal(c.data)
+	c.mu.RUnlock()
 	if err != nil {
 		return fmt.Errorf("序列化配置失败: %w", err)
 	}
@@ -487,6 +499,10 @@ func (c *Config) Unmarshal(v interface{}) error {
 //
 // Merge merges another config object
 func (c *Config) Merge(other *Config) {
+	other.mu.RLock()
+	defer other.mu.RUnlock()
+	c.mu.Lock()
+	defer c.mu.Unlock()
 	c.mergeMaps(c.data, other.data)
 }
 
@@ -575,6 +591,8 @@ func (c *Config) Validate(key string, validator func(interface{}) bool) error {
 //
 // All returns all configuration data
 func (c *Config) All() map[string]interface{} {
+	c.mu.RLock()
+	defer c.mu.RUnlock()
 	return c.deepCopy(c.data).(map[string]interface{})
 }
 
@@ -616,6 +634,8 @@ func (c *Config) deepCopy(src interface{}) interface{} {
 //
 // Clear clears all configuration
 func (c *Config) Clear() {
+	c.mu.Lock()
+	defer c.mu.Unlock()
 	c.data = make(map[string]interface{})
 }
 
@@ -632,6 +652,8 @@ func (c *Config) Clear() {
 //
 // Keys returns all configuration keys
 func (c *Config) Keys() []string {
+	c.mu.RLock()
+	defer c.mu.RUnlock()
 	return c.getKeys("", c.data)
 }
 

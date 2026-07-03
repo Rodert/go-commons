@@ -18,6 +18,7 @@ type WorkerPool struct {
 	ctx        context.Context
 	cancel     context.CancelFunc
 	once       sync.Once
+	closeOnce  sync.Once
 }
 
 // NewWorkerPool 创建新的工作池
@@ -70,17 +71,9 @@ func (wp *WorkerPool) Start() {
 // worker is a worker goroutine
 func (wp *WorkerPool) worker() {
 	defer wp.wg.Done()
-	for {
-		select {
-		case <-wp.ctx.Done():
-			return
-		case task, ok := <-wp.taskQueue:
-			if !ok {
-				return
-			}
-			if task != nil {
-				task()
-			}
+	for task := range wp.taskQueue {
+		if task != nil {
+			task()
 		}
 	}
 }
@@ -105,19 +98,10 @@ func (wp *WorkerPool) Submit(task func()) error {
 		return wp.ctx.Err()
 	case wp.taskQueue <- task:
 		return nil
-	default:
-		// 如果队列已满，检查是否已关闭
-		// If queue is full, check if closed
-		select {
-		case <-wp.ctx.Done():
-			return wp.ctx.Err()
-		case wp.taskQueue <- task:
-			return nil
-		}
 	}
 }
 
-// Stop 停止工作池
+// Stop 停止工作池，等待已入队的任务全部完成后再返回
 //
 // 参数 / Parameters:
 //   - 无 / none
@@ -128,13 +112,15 @@ func (wp *WorkerPool) Submit(task func()) error {
 // 示例 / Example:
 //   pool.Stop()
 //
-// Stop stops the worker pool
+// Stop stops the worker pool and waits for all queued tasks to finish
 func (wp *WorkerPool) Stop() {
-	wp.cancel()
-	// 等待所有任务完成后再关闭channel
-	// Wait for all tasks to complete before closing channel
+	wp.closeOnce.Do(func() {
+		// 关闭 taskQueue，worker 通过 range 退出循环，不会丢失队列中已有的任务
+		// Closing taskQueue lets workers drain remaining tasks then exit naturally
+		close(wp.taskQueue)
+	})
 	wp.wg.Wait()
-	close(wp.taskQueue)
+	wp.cancel()
 }
 
 // Wait 等待所有任务完成
@@ -153,14 +139,13 @@ func (wp *WorkerPool) Wait() {
 	wp.wg.Wait()
 }
 
-// RateLimiter 限流器，用于控制请求速率
-// RateLimiter limits the rate of requests
+// RateLimiter 限流器，用于控制请求速率（令牌桶算法）
+// RateLimiter limits the rate of requests using a token bucket algorithm
 type RateLimiter struct {
-	limit     int64         // 每秒允许的请求数 / requests per second
-	interval  time.Duration // 时间窗口 / time window
-	tokens    int64         // 当前可用令牌数 / current available tokens
-	lastTime  int64         // 上次更新时间（纳秒） / last update time in nanoseconds
-	mu        sync.Mutex
+	limit    int64      // 每秒允许的请求数 / requests per second
+	tokens   int64      // 当前可用令牌数（单位：纳秒等价令牌） / available tokens in nanosecond units
+	lastTime int64      // 上次更新时间（纳秒） / last update time in nanoseconds
+	mu       sync.Mutex
 }
 
 // NewRateLimiter 创建新的限流器
@@ -179,11 +164,11 @@ func NewRateLimiter(limit int) *RateLimiter {
 	if limit <= 0 {
 		limit = 1
 	}
+	now := time.Now().UnixNano()
 	return &RateLimiter{
 		limit:    int64(limit),
-		interval: time.Second,
-		tokens:   int64(limit),
-		lastTime: time.Now().UnixNano(),
+		tokens:   int64(limit) * int64(time.Second), // 初始满令牌，单位为纳秒
+		lastTime: now,
 	}
 }
 
@@ -208,23 +193,21 @@ func (rl *RateLimiter) Allow() bool {
 	now := time.Now().UnixNano()
 	elapsed := now - rl.lastTime
 
-	// 计算应该补充的令牌数（每秒补充limit个令牌）
-	// Calculate tokens to add (add limit tokens per second)
-	// elapsed是纳秒，interval是秒，所以需要转换
-	// elapsed is in nanoseconds, interval is in seconds, so need conversion
-	elapsedSeconds := float64(elapsed) / float64(time.Second)
-	tokensToAdd := int64(elapsedSeconds * float64(rl.limit))
-	
-	if tokensToAdd > 0 {
-		rl.tokens = min(rl.tokens+tokensToAdd, rl.limit)
-		rl.lastTime = now
+	// tokens 以纳秒为单位累积，每纳秒产生 limit/1e9 个令牌。
+	// 全部用整数运算，消除浮点截断误差。
+	// cap = limit * 1e9（纳秒），即满桶上限
+	capNs := rl.limit * int64(time.Second)
+	rl.tokens += elapsed * rl.limit
+	if rl.tokens > capNs {
+		rl.tokens = capNs
 	}
+	rl.lastTime = now
 
-	if rl.tokens > 0 {
-		rl.tokens--
+	// 消耗一个令牌（等价于 1e9 纳秒令牌）
+	if rl.tokens >= int64(time.Second) {
+		rl.tokens -= int64(time.Second)
 		return true
 	}
-
 	return false
 }
 
@@ -241,35 +224,25 @@ func (rl *RateLimiter) Allow() bool {
 //
 // Wait waits until a request is allowed
 func (rl *RateLimiter) Wait(ctx context.Context) error {
+	// 每个令牌的间隔时间 = 1秒 / limit
+	// interval per token = 1s / limit
+	interval := time.Second / time.Duration(rl.limit)
 	for {
 		if rl.Allow() {
 			return nil
 		}
-
 		select {
 		case <-ctx.Done():
 			return ctx.Err()
-		case <-time.After(rl.interval / time.Duration(rl.limit)):
-			// 等待一小段时间后重试
-			// Wait a short time before retrying
+		case <-time.After(interval):
 		}
 	}
 }
 
-// min 返回两个整数中的较小值
-// min returns the smaller of two integers
-func min(a, b int64) int64 {
-	if a < b {
-		return a
-	}
-	return b
-}
-
-// SafeCounter 并发安全的计数器
-// SafeCounter is a thread-safe counter
+// SafeCounter 并发安全的计数器，使用 atomic 操作
+// SafeCounter is a thread-safe counter using atomic operations
 type SafeCounter struct {
 	value int64
-	mu    sync.RWMutex
 }
 
 // NewSafeCounter 创建新的安全计数器

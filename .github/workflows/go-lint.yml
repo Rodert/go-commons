@@ -18,7 +18,7 @@ jobs:
       - name: Set up Go
         uses: actions/setup-go@v4
         with:
-          go-version: '1.24.x'   # 和 go.mod 对齐
+        go-version-file: 'go.mod'
 
       - name: Verify go.mod and go.sum
         run: |

@@ -2,6 +2,7 @@ package netutils
 
 import (
 	"bytes"
+	"context"
 	"encoding/json"
 	"fmt"
 	"io"
@@ -9,9 +10,13 @@ import (
 	"time"
 )
 
+// DefaultMaxResponseBody limits responses from HTTPClient to 10 MiB by default.
+const DefaultMaxResponseBody = 10 << 20
+
 // HTTPClient 是一个简化的HTTP客户端
 type HTTPClient struct {
-	client *http.Client
+	client          *http.Client
+	maxResponseBody int64
 }
 
 // HTTPResponse 表示HTTP响应
@@ -28,10 +33,19 @@ type HTTPResponse struct {
 // 返回:
 //   - *HTTPClient: 新创建的HTTP客户端
 func NewHTTPClient(timeout time.Duration) *HTTPClient {
+	return NewHTTPClientWithMaxResponseBody(timeout, DefaultMaxResponseBody)
+}
+
+// NewHTTPClientWithMaxResponseBody creates an HTTP client that rejects responses larger than maxResponseBody bytes.
+func NewHTTPClientWithMaxResponseBody(timeout time.Duration, maxResponseBody int64) *HTTPClient {
+	if maxResponseBody <= 0 {
+		maxResponseBody = DefaultMaxResponseBody
+	}
 	return &HTTPClient{
 		client: &http.Client{
 			Timeout: timeout,
 		},
+		maxResponseBody: maxResponseBody,
 	}
 }
 
@@ -44,7 +58,12 @@ func NewHTTPClient(timeout time.Duration) *HTTPClient {
 //   - *HTTPResponse: HTTP响应
 //   - error: 如果发生错误则返回错误信息
 func (c *HTTPClient) Get(url string, headers map[string]string) (*HTTPResponse, error) {
-	req, err := http.NewRequest("GET", url, nil)
+	return c.GetWithContext(context.Background(), url, headers)
+}
+
+// GetWithContext sends a GET request and honors context cancellation.
+func (c *HTTPClient) GetWithContext(ctx context.Context, url string, headers map[string]string) (*HTTPResponse, error) {
+	req, err := http.NewRequestWithContext(ctx, http.MethodGet, url, nil)
 	if err != nil {
 		return nil, err
 	}
@@ -67,7 +86,12 @@ func (c *HTTPClient) Get(url string, headers map[string]string) (*HTTPResponse, 
 //   - *HTTPResponse: HTTP响应
 //   - error: 如果发生错误则返回错误信息
 func (c *HTTPClient) Post(url string, headers map[string]string, body []byte) (*HTTPResponse, error) {
-	req, err := http.NewRequest("POST", url, bytes.NewBuffer(body))
+	return c.PostWithContext(context.Background(), url, headers, body)
+}
+
+// PostWithContext sends a POST request and honors context cancellation.
+func (c *HTTPClient) PostWithContext(ctx context.Context, url string, headers map[string]string, body []byte) (*HTTPResponse, error) {
+	req, err := http.NewRequestWithContext(ctx, http.MethodPost, url, bytes.NewBuffer(body))
 	if err != nil {
 		return nil, err
 	}
@@ -118,9 +142,12 @@ func (c *HTTPClient) doRequest(req *http.Request) (*HTTPResponse, error) {
 	}
 	defer resp.Body.Close()
 
-	body, err := io.ReadAll(resp.Body)
+	body, err := io.ReadAll(io.LimitReader(resp.Body, c.maxResponseBody+1))
 	if err != nil {
 		return nil, fmt.Errorf("读取响应体失败: %v", err)
+	}
+	if int64(len(body)) > c.maxResponseBody {
+		return nil, fmt.Errorf("响应体超过最大限制: %d bytes", c.maxResponseBody)
 	}
 
 	return &HTTPResponse{

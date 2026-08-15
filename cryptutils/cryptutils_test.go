@@ -212,3 +212,9 @@ func TestGenerateRandomBytes(t *testing.T) {
 		}
 	}
 }
+
+func TestGenerateRandomBytesRejectsNegativeLength(t *testing.T) {
+	if _, err := cryptutils.GenerateRandomBytes(-1); err == nil {
+		t.Fatal("GenerateRandomBytes(-1) error = nil, want error")
+	}
+}

@@ -45,13 +45,18 @@ hooks:
 .PHONY: test
 test:
 	@echo "运行所有测试..."
-	@$(GO) test -v ./...
+	@$(GO) test -race -v ./...
+
+# 在与 CI 一致的 Go 容器中运行竞态检测和完整测试
+.PHONY: test-docker
+test-docker:
+	@docker build --target test -t go-commons-test .
 
 # 运行所有测试但不生成apidocs
 .PHONY: test-no-apidocs
 test-no-apidocs:
 	@echo "运行所有测试（不生成apidocs）..."
-	@$(GO) test -v ./... -tags=noswagger
+	@$(GO) test -race -v ./... -tags=noswagger
 
 # 运行指定包的测试
 .PHONY: test-pkg
@@ -67,7 +72,9 @@ test-pkg:
 .PHONY: cover
 cover:
 	@echo "运行测试并生成覆盖率报告..."
-	@$(GO) test -coverprofile=$(COVER_PROFILE) ./...
+	@$(GO) test -race ./...
+	@LIBRARY_PACKAGES=$$($(GO) list ./... | grep -Ev '/(cmd|docs|examples)(/|$$)'); \
+		$(GO) test -race -coverprofile=$(COVER_PROFILE) -covermode=atomic $$LIBRARY_PACKAGES
 	@$(GO) tool cover -html=$(COVER_PROFILE)
 	@rm $(COVER_PROFILE)
 
@@ -104,6 +111,7 @@ help:
 	@echo "  make          - 格式化代码并运行所有测试"
 	@echo "  make fmt      - 格式化代码"
 	@echo "  make test     - 运行所有测试"
+	@echo "  make test-docker - 在 Docker 中运行完整竞态测试"
 	@echo "  make test-no-apidocs - 运行所有测试但不生成apidocs"
 	@echo "  make test-pkg PKG=./path/to/package - 运行指定包的测试"
 	@echo "  make cover    - 运行测试并生成覆盖率报告"

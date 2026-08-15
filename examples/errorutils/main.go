@@ -7,7 +7,8 @@ import (
 )
 
 func main() {
-	fmt.Println("=== Error Utils Examples ===\n")
+	fmt.Println("=== Error Utils Examples ===")
+	fmt.Println()
 
 	// 示例1: 基本错误包装
 	// Example 1: Basic error wrapping
@@ -109,7 +110,7 @@ func main() {
 	chain1 := errorutils.Wrap(baseErr, "level 1")
 	chain2 := errorutils.Wrapf(chain1, "level 2: %s", "context")
 	fmt.Printf("   Chain: %v\n", chain2)
-	
+
 	// 使用标准库的 errors.Is 检查
 	// Use standard library's errors.Is to check
 	if errors.Is(chain2, baseErr) {
@@ -119,4 +120,3 @@ func main() {
 		fmt.Printf("   ✓ Can find intermediate error in chain\n")
 	}
 }
-

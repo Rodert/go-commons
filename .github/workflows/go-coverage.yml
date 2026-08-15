@@ -14,14 +14,16 @@ jobs:
     - name: Set up Go
       uses: actions/setup-go@v4
       with:
-        go-version: '1.22.x'
+        go-version-file: 'go.mod'
 
     - name: Check out code
       uses: actions/checkout@v4
 
     - name: Generate coverage report
       run: |
-        go test -coverprofile=coverage.out ./...
+        go test -race ./...
+        LIBRARY_PACKAGES=$(go list ./... | grep -Ev '/(cmd|docs|examples)(/|$)')
+        go test -race -coverprofile=coverage.out -covermode=atomic $LIBRARY_PACKAGES
         go tool cover -func=coverage.out
 
     - name: Upload coverage to Codecov

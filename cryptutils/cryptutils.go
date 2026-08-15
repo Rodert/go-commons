@@ -15,7 +15,8 @@ import (
 	"io"
 )
 
-// MD5Hash 计算字符串的MD5哈希值
+// MD5Hash calculates an MD5 checksum.
+// Deprecated: MD5 is not suitable for passwords, signatures, or other security-sensitive uses.
 // 参数:
 //   - data: 要计算哈希的数据
 //
@@ -26,7 +27,8 @@ func MD5Hash(data []byte) string {
 	return hex.EncodeToString(hash[:])
 }
 
-// SHA1Hash 计算字符串的SHA1哈希值
+// SHA1Hash calculates a SHA-1 checksum.
+// Deprecated: SHA-1 is not suitable for passwords, signatures, or other security-sensitive uses.
 // 参数:
 //   - data: 要计算哈希的数据
 //
@@ -151,6 +153,9 @@ func AESDecrypt(ciphertext, key []byte) ([]byte, error) {
 //   - []byte: 生成的随机字节
 //   - error: 如果生成失败则返回错误信息
 func GenerateRandomBytes(length int) ([]byte, error) {
+	if length < 0 {
+		return nil, fmt.Errorf("length must not be negative")
+	}
 	b := make([]byte, length)
 	_, err := rand.Read(b)
 	if err != nil {

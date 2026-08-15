@@ -1,6 +1,7 @@
 package netutils_test
 
 import (
+	"context"
 	"net/http"
 	"net/http/httptest"
 	"testing"
@@ -8,6 +9,32 @@ import (
 
 	"github.com/Rodert/go-commons/netutils"
 )
+
+func TestHTTPClientResponseBodyLimit(t *testing.T) {
+	server := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		_, _ = w.Write([]byte("12345"))
+	}))
+	defer server.Close()
+
+	client := netutils.NewHTTPClientWithMaxResponseBody(time.Second, 4)
+	if _, err := client.Get(server.URL, nil); err == nil {
+		t.Fatal("Get() error = nil, want response size error")
+	}
+}
+
+func TestHTTPClientGetWithContext(t *testing.T) {
+	server := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		<-r.Context().Done()
+	}))
+	defer server.Close()
+
+	ctx, cancel := context.WithCancel(context.Background())
+	cancel()
+	client := netutils.NewHTTPClient(time.Second)
+	if _, err := client.GetWithContext(ctx, server.URL, nil); err == nil {
+		t.Fatal("GetWithContext() error = nil, want context cancellation error")
+	}
+}
 
 func TestIsValidIPv4(t *testing.T) {
 	tests := []struct {

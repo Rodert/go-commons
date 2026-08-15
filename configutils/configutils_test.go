@@ -3,7 +3,9 @@ package configutils
 import (
 	"os"
 	"reflect"
+	"sync"
 	"testing"
+	"time"
 )
 
 func TestNewConfig(t *testing.T) {
@@ -281,6 +283,57 @@ func TestMerge(t *testing.T) {
 	}
 }
 
+func TestMergeSelfIsNoop(t *testing.T) {
+	config := NewConfig()
+	config.Set("service.port", 8080)
+
+	done := make(chan struct{})
+	go func() {
+		config.Merge(config)
+		close(done)
+	}()
+
+	select {
+	case <-done:
+	case <-time.After(time.Second):
+		t.Fatal("Merge(config) deadlocked")
+	}
+	if got := config.GetInt("service.port", 0); got != 8080 {
+		t.Errorf("port = %d, want 8080", got)
+	}
+}
+
+func TestMergeBothDirectionsConcurrently(t *testing.T) {
+	left := NewConfig()
+	right := NewConfig()
+	left.Set("left", true)
+	right.Set("right", true)
+
+	var wg sync.WaitGroup
+	for i := 0; i < 50; i++ {
+		wg.Add(2)
+		go func() {
+			defer wg.Done()
+			left.Merge(right)
+		}()
+		go func() {
+			defer wg.Done()
+			right.Merge(left)
+		}()
+	}
+
+	done := make(chan struct{})
+	go func() {
+		wg.Wait()
+		close(done)
+	}()
+	select {
+	case <-done:
+	case <-time.After(2 * time.Second):
+		t.Fatal("concurrent Merge calls deadlocked")
+	}
+}
+
 func TestSetDefaults(t *testing.T) {
 	config := NewConfig()
 
@@ -381,8 +434,8 @@ func TestKeys(t *testing.T) {
 	// 检查是否包含所有键
 	// Check if all keys are included
 	expectedKeys := map[string]bool{
-		"key1":      true,
-		"key2":      true,
+		"key1":       true,
+		"key2":       true,
 		"nested.key": true,
 	}
 
@@ -520,4 +573,3 @@ func TestParseValue(t *testing.T) {
 		})
 	}
 }
-

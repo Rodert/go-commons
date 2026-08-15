@@ -11,7 +11,8 @@ import (
 )
 
 func main() {
-	fmt.Println("=== Concurrent Utils Examples ===\n")
+	fmt.Println("=== Concurrent Utils Examples ===")
+	fmt.Println()
 
 	// 示例1: Worker Pool
 	// Example 1: Worker Pool
@@ -195,4 +196,3 @@ func main() {
 	fmt.Printf("   Completed %d concurrent operations\n", concurrentOps)
 	fmt.Printf("   Final cache size: %d\n", concurrentCache.Size())
 }
-

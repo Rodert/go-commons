@@ -14,7 +14,7 @@ jobs:
     - name: Set up Go
       uses: actions/setup-go@v4
       with:
-        go-version: '1.22.x'
+        go-version-file: 'go.mod'
 
     - name: Check out code
       uses: actions/checkout@v4
@@ -22,15 +22,13 @@ jobs:
     - name: Get dependencies
       run: go mod download
 
-    - name: Run tests with coverage
+    - name: Run all tests with the race detector
+      run: go test -race -v ./...
+
+    - name: Generate library coverage
       run: |
-        go test -v -coverprofile=coverage.out -covermode=atomic \
-          ./cryptutils/... \
-          ./netutils/... \
-          ./stringutils/... \
-          ./systemutils/... \
-          ./timeutils/... \
-          ./validationutils/...
+        LIBRARY_PACKAGES=$(go list ./... | grep -Ev '/(cmd|docs|examples)(/|$)')
+        go test -race -coverprofile=coverage.out -covermode=atomic $LIBRARY_PACKAGES
 
     - name: Show coverage report
       run: go tool cover -func=coverage.out
@@ -48,4 +46,3 @@ jobs:
         else
           echo "✅ Coverage ${COVERAGE}% meets ${MIN_COVERAGE}% threshold"
         fi
-      continue-on-error: true

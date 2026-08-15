@@ -2,6 +2,7 @@ package concurrentutils
 
 import (
 	"context"
+	"errors"
 	"sync"
 	"sync/atomic"
 	"testing"
@@ -78,6 +79,74 @@ func TestWorkerPool_Stop(t *testing.T) {
 	err := pool.Submit(func() {})
 	if err == nil {
 		t.Errorf("Submit() after Stop() should return error")
+	}
+}
+
+func TestWorkerPool_WaitWaitsForTasks(t *testing.T) {
+	pool := NewWorkerPool(1)
+	defer pool.Stop()
+
+	started := make(chan struct{})
+	release := make(chan struct{})
+	if err := pool.Submit(func() {
+		close(started)
+		<-release
+	}); err != nil {
+		t.Fatalf("Submit() error = %v", err)
+	}
+	<-started
+
+	waitDone := make(chan struct{})
+	go func() {
+		pool.Wait()
+		close(waitDone)
+	}()
+
+	select {
+	case <-waitDone:
+		t.Fatal("Wait() returned before the submitted task completed")
+	case <-time.After(25 * time.Millisecond):
+	}
+
+	close(release)
+	select {
+	case <-waitDone:
+	case <-time.After(time.Second):
+		t.Fatal("Wait() did not return after the submitted task completed")
+	}
+}
+
+func TestWorkerPool_StopAndSubmitConcurrently(t *testing.T) {
+	pool := NewWorkerPool(4)
+	pool.Start()
+
+	var executed atomic.Int64
+	var accepted atomic.Int64
+	var submitters sync.WaitGroup
+	for i := 0; i < 100; i++ {
+		submitters.Add(1)
+		go func() {
+			defer submitters.Done()
+			if err := pool.Submit(func() { executed.Add(1) }); err == nil {
+				accepted.Add(1)
+			} else if !errors.Is(err, ErrWorkerPoolStopped) {
+				t.Errorf("Submit() error = %v, want ErrWorkerPoolStopped", err)
+			}
+		}()
+	}
+
+	pool.Stop()
+	submitters.Wait()
+	if got, want := executed.Load(), accepted.Load(); got != want {
+		t.Errorf("executed tasks = %d, accepted tasks = %d", got, want)
+	}
+}
+
+func TestWorkerPool_StopBeforeStart(t *testing.T) {
+	pool := NewWorkerPool(1)
+	pool.Stop()
+	if err := pool.Submit(func() {}); !errors.Is(err, ErrWorkerPoolStopped) {
+		t.Errorf("Submit() after Stop() error = %v, want ErrWorkerPoolStopped", err)
 	}
 }
 
@@ -482,4 +551,3 @@ func TestRateLimiter_Allow_WithTime(t *testing.T) {
 		t.Errorf("RateLimiter.Allow() should allow after waiting")
 	}
 }
-

@@ -30,15 +30,15 @@
 - **文件工具（`fileutils`）**：
   - 文件读写：`ReadFile`、`WriteFile`、`ReadFileLines`
   - 目录操作：`WalkDir`、`FindFiles`
-  - 文件操作：`Copy`、`Move`、`Delete`、`Exists`
+  - 文件操作：`CopyFile`、`MoveFile`、`DeleteFile`、`Exists`
   - 路径工具：`JoinPath`、`CleanPath`、`BaseName`、`DirName`
   - 文件类型检测：`GetFileType`、`IsDir`、`IsFile`
 - **切片工具（`sliceutils`）**：
-  - 去重：`Unique`、`UniqueInt`、`UniqueString`
+  - 去重：`Unique`
   - 函数式操作：`Filter`、`Map`、`Reduce`
-  - 分页：`Paginate`、`PaginateInt`
+  - 分页：`Paginate`
   - 集合操作：`Intersection`、`Union`、`Difference`
-  - 排序：`Sort`、`SortInt`、`SortString`、`SortIntDesc`、`SortStringDesc`
+  - 排序：`Sort`、`SortDesc`
 - **JSON/转换工具（`jsonutils`、`convertutils`）**：
   - JSON格式化：`PrettyJSON`、`CompactJSON`
   - 类型转换：`MapToStruct`、`StructToMap`、`StringToInt`、`IntToString`、`FloatToString`
@@ -83,6 +83,7 @@ package main
 
 import (
 	"fmt"
+	"time"
 	"github.com/Rodert/go-commons/stringutils"
 	"github.com/Rodert/go-commons/timeutils"
 	"github.com/Rodert/go-commons/configutils"
@@ -94,7 +95,7 @@ func main() {
 	fmt.Println(stringutils.Trim("  hello  "))  // "hello"
 	
 	// 时间工具
-	now := timeutils.Now()
+	now := time.Now()
 	fmt.Println(timeutils.FormatTime(now, timeutils.DefaultDateTimeFormat))
 	
 	// 配置工具
@@ -132,6 +133,14 @@ func main() {
 
 ```bash
 make hooks
+```
+
+### 测试
+
+在固定 Go 版本的容器中运行完整测试和竞态检测：
+
+```bash
+make test-docker
 ```
 
 ### API文档
@@ -324,11 +333,11 @@ func main() {
 	content, _ := fileutils.ReadFile("config.json")
 	
 	// 写入文件
-	fileutils.WriteFile("output.txt", []byte("Hello World"))
+	fileutils.WriteFile("output.txt", []byte("Hello World"), 0644)
 	
 	// 文件操作
 	if fileutils.Exists("file.txt") {
-		fileutils.Copy("file.txt", "file_copy.txt")
+		fileutils.CopyFile("file.txt", "file_copy.txt")
 	}
 	
 	// 路径工具
@@ -350,7 +359,7 @@ import (
 func main() {
 	// 去重
 	nums := []int{1, 2, 2, 3, 3, 3}
-	unique := sliceutils.UniqueInt(nums)  // [1, 2, 3]
+	unique := sliceutils.Unique(nums)  // [1, 2, 3]
 	
 	// 过滤
 	even := sliceutils.Filter(nums, func(n int) bool {
@@ -358,7 +367,9 @@ func main() {
 	})
 	
 	// 分页
-	page := sliceutils.PaginateInt(nums, 1, 2)  // 第1页，每页2条
+	page, total, err := sliceutils.Paginate(nums, 1, 2)  // 第1页，每页2条
+	_ = total
+	_ = err
 	
 	// 集合操作
 	a := []int{1, 2, 3}
@@ -385,12 +396,13 @@ func main() {
 	fmt.Println(pretty)
 	
 	// 类型转换
-	num := convertutils.StringToInt("123", 0)  // 123
+	num, _ := convertutils.StringToInt("123")  // 123
 	str := convertutils.IntToString(456)       // "456"
 	
 	// 深拷贝
 	original := map[string]interface{}{"key": "value"}
-	copied := convertutils.DeepCopy(original)
+	var copied map[string]interface{}
+	_ = convertutils.DeepCopy(&original, &copied)
 }
 ```
 

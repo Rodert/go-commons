@@ -12,7 +12,7 @@ A comprehensive collection of Go utility packages with minimal third‑party dep
 
 ## Features
 
-- **No third‑party deps**: Prefer using the Go standard library where possible
+- **Standard-library-first**: Core utilities use the Go standard library; the optional API documentation server uses Gin and Swag.
 - **String utilities (`stringutils`)**:
   - Emptiness and whitespace: `IsEmpty`, `IsNotEmpty`, `IsBlank`, `IsNotBlank`, `Trim`, `TrimToEmpty`
   - Substrings and checks: `ContainsAny`, `ContainsAll`, `SubstringBefore`, `SubstringAfter`, `StartsWith`, `EndsWith`
@@ -30,15 +30,15 @@ A comprehensive collection of Go utility packages with minimal third‑party dep
 - **File utilities (`fileutils`)**:
   - File I/O: `ReadFile`, `WriteFile`, `ReadFileLines`
   - Directory operations: `WalkDir`, `FindFiles`
-  - File operations: `Copy`, `Move`, `Delete`, `Exists`
+  - File operations: `CopyFile`, `MoveFile`, `DeleteFile`, `Exists`
   - Path utilities: `JoinPath`, `CleanPath`, `BaseName`, `DirName`
   - File type detection: `GetFileType`, `IsDir`, `IsFile`
 - **Slice utilities (`sliceutils`)**:
-  - Deduplication: `Unique`, `UniqueInt`, `UniqueString`
+  - Deduplication: `Unique`
   - Functional operations: `Filter`, `Map`, `Reduce`
-  - Pagination: `Paginate`, `PaginateInt`
+  - Pagination: `Paginate`
   - Set operations: `Intersection`, `Union`, `Difference`
-  - Sorting: `Sort`, `SortInt`, `SortString`, `SortIntDesc`, `SortStringDesc`
+  - Sorting: `Sort`, `SortDesc`
 - **JSON/Convert utilities (`jsonutils`, `convertutils`)**:
   - JSON formatting: `PrettyJSON`, `CompactJSON`
   - Type conversion: `MapToStruct`, `StructToMap`, `StringToInt`, `IntToString`, `FloatToString`
@@ -83,6 +83,7 @@ package main
 
 import (
 	"fmt"
+	"time"
 	"github.com/Rodert/go-commons/stringutils"
 	"github.com/Rodert/go-commons/timeutils"
 	"github.com/Rodert/go-commons/configutils"
@@ -94,7 +95,7 @@ func main() {
 	fmt.Println(stringutils.Trim("  hello  "))  // "hello"
 	
 	// Time utilities
-	now := timeutils.Now()
+	now := time.Now()
 	fmt.Println(timeutils.FormatTime(now, timeutils.DefaultDateTimeFormat))
 	
 	// Config utilities
@@ -132,6 +133,14 @@ To install the pre-commit hook:
 
 ```bash
 make hooks
+```
+
+### Testing
+
+Run the full suite, including the race detector, in the pinned Go container:
+
+```bash
+make test-docker
 ```
 
 ### API Documentation
@@ -324,11 +333,11 @@ func main() {
 	content, _ := fileutils.ReadFile("config.json")
 	
 	// Write file
-	fileutils.WriteFile("output.txt", []byte("Hello World"))
+	fileutils.WriteFile("output.txt", []byte("Hello World"), 0644)
 	
 	// File operations
 	if fileutils.Exists("file.txt") {
-		fileutils.Copy("file.txt", "file_copy.txt")
+		fileutils.CopyFile("file.txt", "file_copy.txt")
 	}
 	
 	// Path utilities
@@ -350,7 +359,7 @@ import (
 func main() {
 	// Deduplication
 	nums := []int{1, 2, 2, 3, 3, 3}
-	unique := sliceutils.UniqueInt(nums)  // [1, 2, 3]
+	unique := sliceutils.Unique(nums)  // [1, 2, 3]
 	
 	// Filter
 	even := sliceutils.Filter(nums, func(n int) bool {
@@ -358,7 +367,9 @@ func main() {
 	})
 	
 	// Pagination
-	page := sliceutils.PaginateInt(nums, 1, 2)  // page 1, size 2
+	page, total, err := sliceutils.Paginate(nums, 1, 2)  // page 1, size 2
+	_ = total
+	_ = err
 	
 	// Set operations
 	a := []int{1, 2, 3}
@@ -385,12 +396,13 @@ func main() {
 	fmt.Println(pretty)
 	
 	// Type conversion
-	num := convertutils.StringToInt("123", 0)  // 123
+	num, _ := convertutils.StringToInt("123")  // 123
 	str := convertutils.IntToString(456)       // "456"
 	
 	// Deep copy
 	original := map[string]interface{}{"key": "value"}
-	copied := convertutils.DeepCopy(original)
+	var copied map[string]interface{}
+	_ = convertutils.DeepCopy(&original, &copied)
 }
 ```
 

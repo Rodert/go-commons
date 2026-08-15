@@ -10,7 +10,8 @@ import (
 )
 
 func main() {
-	fmt.Println("=== Config Utils Examples ===\n")
+	fmt.Println("=== Config Utils Examples ===")
+	fmt.Println()
 
 	// 示例1: 创建配置对象并设置值
 	// Example 1: Create config object and set values
@@ -43,7 +44,7 @@ func main() {
 		},
 		"allowed_hosts": ["localhost", "127.0.0.1", "example.com"]
 	}`
-	
+
 	jsonConfig := configutils.NewConfig()
 	if err := jsonConfig.LoadFromJSONString(jsonStr); err != nil {
 		fmt.Printf("   Error: %v\n\n", err)
@@ -70,12 +71,12 @@ func main() {
 			"port": 5432
 		}
 	}`
-	
+
 	if err := os.WriteFile(tmpFile, []byte(jsonContent), 0644); err != nil {
 		fmt.Printf("   Error creating temp file: %v\n\n", err)
 	} else {
 		defer os.Remove(tmpFile)
-		
+
 		fileConfig, err := configutils.LoadConfigFromJSON(tmpFile)
 		if err != nil {
 			fmt.Printf("   Error: %v\n\n", err)
@@ -115,7 +116,7 @@ func main() {
 	defaultConfig := configutils.NewConfig()
 	defaultConfig.Set("app.name", "CustomApp") // 这个值不会被默认值覆盖
 	// This value won't be overwritten by defaults
-	
+
 	defaults := map[string]interface{}{
 		"app.name":    "DefaultApp",
 		"app.version": "1.0.0",
@@ -123,7 +124,7 @@ func main() {
 		"app.debug":   false,
 	}
 	defaultConfig.SetDefaults(defaults)
-	
+
 	fmt.Printf("   App Name (custom, not overwritten): %s\n", defaultConfig.GetString("app.name", ""))
 	fmt.Printf("   App Version (default): %s\n", defaultConfig.GetString("app.version", ""))
 	fmt.Printf("   App Port (default): %d\n", defaultConfig.GetInt("app.port", 0))
@@ -135,7 +136,7 @@ func main() {
 	validateConfig := configutils.NewConfig()
 	validateConfig.Set("server.port", 8080)
 	validateConfig.Set("server.timeout", 30)
-	
+
 	// 验证端口范围
 	// Validate port range
 	err := validateConfig.Validate("server.port", func(v interface{}) bool {
@@ -147,7 +148,7 @@ func main() {
 	} else {
 		fmt.Printf("   ✓ Port validation passed\n")
 	}
-	
+
 	// 验证超时值
 	// Validate timeout value
 	err = validateConfig.Validate("server.timeout", func(v interface{}) bool {
@@ -168,13 +169,13 @@ func main() {
 	config1.Set("app.name", "App1")
 	config1.Set("database.host", "host1")
 	config1.Set("shared.key", "value1")
-	
+
 	config2 := configutils.NewConfig()
 	config2.Set("app.version", "2.0.0")
 	config2.Set("database.port", 3306)
 	config2.Set("shared.key", "value2") // 这个值会覆盖config1的值
 	// This value will overwrite config1's value
-	
+
 	config1.Merge(config2)
 	fmt.Printf("   App Name: %s\n", config1.GetString("app.name", ""))
 	fmt.Printf("   App Version: %s\n", config1.GetString("app.version", ""))
@@ -190,13 +191,13 @@ func main() {
 		Port    int    `json:"port"`
 		Timeout int    `json:"timeout"`
 	}
-	
+
 	type AppConfig struct {
-		Name   string        `json:"name"`
-		Server ServerConfig  `json:"server"`
-		Debug  bool          `json:"debug"`
+		Name   string       `json:"name"`
+		Server ServerConfig `json:"server"`
+		Debug  bool         `json:"debug"`
 	}
-	
+
 	structConfig := configutils.NewConfig()
 	structConfig.LoadFromJSONString(`{
 		"name": "StructApp",
@@ -207,7 +208,7 @@ func main() {
 		},
 		"debug": true
 	}`)
-	
+
 	var appCfg AppConfig
 	if err := structConfig.Unmarshal(&appCfg); err != nil {
 		fmt.Printf("   Error: %v\n\n", err)
@@ -227,7 +228,7 @@ func main() {
 	keysConfig.Set("app.version", "1.0.0")
 	keysConfig.Set("database.host", "localhost")
 	keysConfig.Set("database.port", 3306)
-	
+
 	keys := keysConfig.Keys()
 	fmt.Printf("   Total keys: %d\n", len(keys))
 	for _, key := range keys {
@@ -240,13 +241,12 @@ func main() {
 	fmt.Println("10. Check Configuration Existence:")
 	checkConfig := configutils.NewConfig()
 	checkConfig.Set("existing.key", "value")
-	
+
 	if checkConfig.Has("existing.key") {
 		fmt.Printf("   ✓ 'existing.key' exists\n")
 	}
-	
+
 	if !checkConfig.Has("nonexistent.key") {
 		fmt.Printf("   ✓ 'nonexistent.key' does not exist\n")
 	}
 }
-

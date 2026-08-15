@@ -27,7 +27,8 @@ type Config struct {
 //   - *Config: 新的配置对象 / new config object
 //
 // 示例 / Example:
-//   config := NewConfig()
+//
+//	config := NewConfig()
 //
 // NewConfig creates a new config object
 func NewConfig() *Config {
@@ -45,7 +46,8 @@ func NewConfig() *Config {
 //   - error: 如果加载失败则返回错误 / error if loading fails
 //
 // 示例 / Example:
-//   err := config.LoadFromJSON("config.json")
+//
+//	err := config.LoadFromJSON("config.json")
 //
 // LoadFromJSON loads configuration from a JSON file
 func (c *Config) LoadFromJSON(filepath string) error {
@@ -74,7 +76,8 @@ func (c *Config) LoadFromJSON(filepath string) error {
 //   - error: 如果加载失败则返回错误 / error if loading fails
 //
 // 示例 / Example:
-//   err := config.LoadFromJSONString(`{"key":"value"}`)
+//
+//	err := config.LoadFromJSONString(`{"key":"value"}`)
 //
 // LoadFromJSONString loads configuration from a JSON string
 func (c *Config) LoadFromJSONString(jsonStr string) error {
@@ -98,7 +101,8 @@ func (c *Config) LoadFromJSONString(jsonStr string) error {
 //   - 无 / none
 //
 // 示例 / Example:
-//   config.LoadFromEnv("APP_") // 只加载 APP_ 开头的环境变量
+//
+//	config.LoadFromEnv("APP_") // 只加载 APP_ 开头的环境变量
 //
 // LoadFromEnv loads configuration from environment variables with the given prefix
 func (c *Config) LoadFromEnv(prefix string) {
@@ -177,7 +181,8 @@ func parseValue(value string) interface{} {
 //   - 无 / none
 //
 // 示例 / Example:
-//   config.Set("database.host", "localhost")
+//
+//	config.Set("database.host", "localhost")
 //
 // Set sets a configuration value
 func (c *Config) Set(key string, value interface{}) {
@@ -220,7 +225,8 @@ func (c *Config) setNested(keys []string, value interface{}, data map[string]int
 //   - bool: 是否存在 / whether the key exists
 //
 // 示例 / Example:
-//   value, exists := config.Get("database.host")
+//
+//	value, exists := config.Get("database.host")
 //
 // Get gets a configuration value
 func (c *Config) Get(key string) (interface{}, bool) {
@@ -264,7 +270,8 @@ func (c *Config) getNested(keys []string, data map[string]interface{}) (interfac
 //   - string: 配置值或默认值 / config value or default value
 //
 // 示例 / Example:
-//   host := config.GetString("database.host", "localhost")
+//
+//	host := config.GetString("database.host", "localhost")
 //
 // GetString gets a string configuration value
 func (c *Config) GetString(key string, defaultValue string) string {
@@ -290,7 +297,8 @@ func (c *Config) GetString(key string, defaultValue string) string {
 //   - int64: 配置值或默认值 / config value or default value
 //
 // 示例 / Example:
-//   port := config.GetInt("database.port", 3306)
+//
+//	port := config.GetInt("database.port", 3306)
 //
 // GetInt gets an integer configuration value
 func (c *Config) GetInt(key string, defaultValue int64) int64 {
@@ -327,7 +335,8 @@ func (c *Config) GetInt(key string, defaultValue int64) int64 {
 //   - float64: 配置值或默认值 / config value or default value
 //
 // 示例 / Example:
-//   ratio := config.GetFloat("app.ratio", 0.5)
+//
+//	ratio := config.GetFloat("app.ratio", 0.5)
 //
 // GetFloat gets a float configuration value
 func (c *Config) GetFloat(key string, defaultValue float64) float64 {
@@ -364,7 +373,8 @@ func (c *Config) GetFloat(key string, defaultValue float64) float64 {
 //   - bool: 配置值或默认值 / config value or default value
 //
 // 示例 / Example:
-//   debug := config.GetBool("app.debug", false)
+//
+//	debug := config.GetBool("app.debug", false)
 //
 // GetBool gets a boolean configuration value
 func (c *Config) GetBool(key string, defaultValue bool) bool {
@@ -395,7 +405,8 @@ func (c *Config) GetBool(key string, defaultValue bool) bool {
 //   - []string: 配置值或默认值 / config value or default value
 //
 // 示例 / Example:
-//   hosts := config.GetStringSlice("database.hosts", []string{"localhost"})
+//
+//	hosts := config.GetStringSlice("database.hosts", []string{"localhost"})
 //
 // GetStringSlice gets a string slice configuration value
 func (c *Config) GetStringSlice(key string, defaultValue []string) []string {
@@ -444,7 +455,8 @@ func (c *Config) GetStringSlice(key string, defaultValue []string) []string {
 //   - bool: 如果存在则返回true / true if key exists
 //
 // 示例 / Example:
-//   if config.Has("database.host") { ... }
+//
+//	if config.Has("database.host") { ... }
 //
 // Has checks if a configuration key exists
 func (c *Config) Has(key string) bool {
@@ -461,14 +473,15 @@ func (c *Config) Has(key string) bool {
 //   - error: 如果解析失败则返回错误 / error if unmarshaling fails
 //
 // 示例 / Example:
-//   type AppConfig struct {
-//       Database struct {
-//           Host string `json:"host"`
-//           Port int    `json:"port"`
-//       } `json:"database"`
-//   }
-//   var cfg AppConfig
-//   err := config.Unmarshal(&cfg)
+//
+//	type AppConfig struct {
+//	    Database struct {
+//	        Host string `json:"host"`
+//	        Port int    `json:"port"`
+//	    } `json:"database"`
+//	}
+//	var cfg AppConfig
+//	err := config.Unmarshal(&cfg)
 //
 // Unmarshal unmarshals configuration into a struct
 func (c *Config) Unmarshal(v interface{}) error {
@@ -495,15 +508,22 @@ func (c *Config) Unmarshal(v interface{}) error {
 //   - 无 / none
 //
 // 示例 / Example:
-//   config.Merge(otherConfig)
+//
+//	config.Merge(otherConfig)
 //
 // Merge merges another config object
 func (c *Config) Merge(other *Config) {
+	if c == other {
+		return
+	}
+
 	other.mu.RLock()
-	defer other.mu.RUnlock()
+	snapshot := c.deepCopy(other.data).(map[string]interface{})
+	other.mu.RUnlock()
+
 	c.mu.Lock()
 	defer c.mu.Unlock()
-	c.mergeMaps(c.data, other.data)
+	c.mergeMaps(c.data, snapshot)
 }
 
 // mergeMaps 递归合并两个map
@@ -535,16 +555,21 @@ func (c *Config) mergeMaps(dest, src map[string]interface{}) {
 //   - 无 / none
 //
 // 示例 / Example:
-//   config.SetDefaults(map[string]interface{}{
-//       "database.host": "localhost",
-//       "database.port": 3306,
-//   })
+//
+//	config.SetDefaults(map[string]interface{}{
+//	    "database.host": "localhost",
+//	    "database.port": 3306,
+//	})
 //
 // SetDefaults sets default values for configuration
 func (c *Config) SetDefaults(defaults map[string]interface{}) {
+	c.mu.Lock()
+	defer c.mu.Unlock()
+
 	for key, value := range defaults {
-		if !c.Has(key) {
-			c.Set(key, value)
+		keys := strings.Split(key, ".")
+		if _, exists := c.getNested(keys, c.data); !exists {
+			c.setNested(keys, value, c.data)
 		}
 	}
 }
@@ -559,10 +584,11 @@ func (c *Config) SetDefaults(defaults map[string]interface{}) {
 //   - error: 如果验证失败则返回错误 / error if validation fails
 //
 // 示例 / Example:
-//   err := config.Validate("database.port", func(v interface{}) bool {
-//       port, ok := v.(float64)
-//       return ok && port > 0 && port < 65536
-//   })
+//
+//	err := config.Validate("database.port", func(v interface{}) bool {
+//	    port, ok := v.(float64)
+//	    return ok && port > 0 && port < 65536
+//	})
 //
 // Validate validates a configuration value
 func (c *Config) Validate(key string, validator func(interface{}) bool) error {
@@ -587,7 +613,8 @@ func (c *Config) Validate(key string, validator func(interface{}) bool) error {
 //   - map[string]interface{}: 所有配置数据的副本 / copy of all configuration data
 //
 // 示例 / Example:
-//   all := config.All()
+//
+//	all := config.All()
 //
 // All returns all configuration data
 func (c *Config) All() map[string]interface{} {
@@ -630,7 +657,8 @@ func (c *Config) deepCopy(src interface{}) interface{} {
 //   - 无 / none
 //
 // 示例 / Example:
-//   config.Clear()
+//
+//	config.Clear()
 //
 // Clear clears all configuration
 func (c *Config) Clear() {
@@ -648,7 +676,8 @@ func (c *Config) Clear() {
 //   - []string: 所有配置键的列表 / list of all configuration keys
 //
 // 示例 / Example:
-//   keys := config.Keys()
+//
+//	keys := config.Keys()
 //
 // Keys returns all configuration keys
 func (c *Config) Keys() []string {
@@ -686,7 +715,8 @@ func (c *Config) getKeys(prefix string, data map[string]interface{}) []string {
 //   - error: 如果加载失败则返回错误 / error if loading fails
 //
 // 示例 / Example:
-//   config, err := LoadConfigFromJSON("config.json")
+//
+//	config, err := LoadConfigFromJSON("config.json")
 //
 // LoadConfigFromJSON creates a config object from a JSON file (convenience function)
 func LoadConfigFromJSON(filepath string) (*Config, error) {
@@ -706,7 +736,8 @@ func LoadConfigFromJSON(filepath string) (*Config, error) {
 //   - *Config: 配置对象 / config object
 //
 // 示例 / Example:
-//   config := LoadConfigFromEnv("APP_")
+//
+//	config := LoadConfigFromEnv("APP_")
 //
 // LoadConfigFromEnv creates a config object from environment variables (convenience function)
 func LoadConfigFromEnv(prefix string) *Config {
@@ -714,4 +745,3 @@ func LoadConfigFromEnv(prefix string) *Config {
 	config.LoadFromEnv(prefix)
 	return config
 }
-

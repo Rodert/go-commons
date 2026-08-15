@@ -8,11 +8,15 @@
 [![Go Lint](https://github.com/Rodert/go-commons/actions/workflows/go-lint.yml/badge.svg)](https://github.com/Rodert/go-commons/actions/workflows/go-lint.yml)
 [![codecov](https://codecov.io/gh/Rodert/go-commons/branch/main/graph/badge.svg)](https://codecov.io/gh/Rodert/go-commons)
 
-A comprehensive collection of Go utility packages with minimal third‑party dependencies, providing essential tools for common development tasks.
+A standard-library-first Go infrastructure library for backend and modern AI applications.
 
 ## Features
 
 - **Standard-library-first**: Core utilities use the Go standard library. The optional Gin/Swag API server lives in the separate `cmd/apidocs` module.
+- **AI infrastructure (`ai`)**:
+  - Provider-neutral messages, token usage, tool calls, and streaming chunks
+  - OpenAI Chat Completions and OpenAI-compatible providers (`ai/openai`)
+  - Compatible with DeepSeek, SiliconFlow, Ollama, vLLM, and similar endpoints
 - **String utilities (`stringutils`)**:
   - Emptiness and whitespace: `IsEmpty`, `IsNotEmpty`, `IsBlank`, `IsNotBlank`, `Trim`, `TrimToEmpty`
   - Substrings and checks: `ContainsAny`, `ContainsAll`, `SubstringBefore`, `SubstringAfter`, `StartsWith`, `EndsWith`
@@ -172,6 +176,23 @@ make fmt
 ```
 
 ## Usage
+
+### AI Utilities
+
+```go
+client := openai.NewClient(openai.Config{
+	APIKey:  os.Getenv("AI_API_KEY"),
+	BaseURL: "https://api.example.com/v1",
+})
+
+response, err := client.Chat(ctx, &ai.Request{
+	Model: "model-name",
+	Messages: []ai.Message{
+		{Role: ai.RoleSystem, Content: "You are a concise assistant."},
+		{Role: ai.RoleUser, Content: "Explain Go contexts."},
+	},
+})
+```
 
 ### String Utilities
 

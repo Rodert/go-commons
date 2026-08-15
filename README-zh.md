@@ -8,11 +8,15 @@
 [![Go Lint](https://github.com/Rodert/go-commons/actions/workflows/go-lint.yml/badge.svg)](https://github.com/Rodert/go-commons/actions/workflows/go-lint.yml)
 [![codecov](https://codecov.io/gh/Rodert/go-commons/branch/main/graph/badge.svg)](https://codecov.io/gh/Rodert/go-commons)
 
-一组全面的 Go 实用工具包，尽量不依赖第三方库，为常见开发任务提供必要的工具。
+一个标准库优先的 Go 基础设施库，面向后端服务和现代 AI 应用。
 
 ## 特性
 
 - **标准库优先**：核心工具仅使用 Go 标准库；可选的 Gin/Swag API 服务位于独立的 `cmd/apidocs` module。
+- **AI 基础能力（`ai`）**：
+  - 统一消息、Token 用量、工具调用与流式响应数据结构
+  - OpenAI Chat Completions 与 OpenAI-compatible Provider（`ai/openai`）
+  - 兼容 DeepSeek、SiliconFlow、Ollama、vLLM 等 OpenAI 风格接口
 - **字符串工具（`stringutils`）**：
   - 空与空白：`IsEmpty`、`IsNotEmpty`、`IsBlank`、`IsNotBlank`、`Trim`、`TrimToEmpty`
   - 子串与判断：`ContainsAny`、`ContainsAll`、`SubstringBefore`、`SubstringAfter`、`StartsWith`、`EndsWith`
@@ -172,6 +176,23 @@ make fmt
 ```
 
 ## 使用示例
+
+### AI 工具
+
+```go
+client := openai.NewClient(openai.Config{
+	APIKey:  os.Getenv("AI_API_KEY"),
+	BaseURL: "https://api.example.com/v1",
+})
+
+response, err := client.Chat(ctx, &ai.Request{
+	Model: "model-name",
+	Messages: []ai.Message{
+		{Role: ai.RoleSystem, Content: "你是简洁的助手。"},
+		{Role: ai.RoleUser, Content: "解释 Go context。"},
+	},
+})
+```
 
 ### 字符串工具
 

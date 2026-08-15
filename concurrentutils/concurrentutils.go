@@ -13,22 +13,28 @@ import (
 // WorkerPool 工作池，用于并发执行任务
 // WorkerPool is a pool of workers for concurrent task execution
 type WorkerPool struct {
-	workers   int
-	taskQueue chan func()
-	workerWG  sync.WaitGroup
-	taskWG    sync.WaitGroup
-	submitWG  sync.WaitGroup
-	ctx       context.Context
-	cancel    context.CancelFunc
-	startOnce sync.Once
-	stopOnce  sync.Once
-	stateMu   sync.Mutex
-	stopped   bool
-	stopDone  chan struct{}
+	workers      int
+	taskQueue    chan func()
+	workerWG     sync.WaitGroup
+	taskWG       sync.WaitGroup
+	submitWG     sync.WaitGroup
+	ctx          context.Context
+	cancel       context.CancelFunc
+	startOnce    sync.Once
+	stopOnce     sync.Once
+	stateMu      sync.Mutex
+	stopped      bool
+	stopDone     chan struct{}
+	panicHandler func(any)
 }
 
 // ErrWorkerPoolStopped is returned when submitting to a stopped worker pool.
 var ErrWorkerPoolStopped = errors.New("worker pool is stopped")
+
+// WithPanicHandler invokes handler when a submitted task panics and keeps the worker available.
+func WithPanicHandler(handler func(any)) func(*WorkerPool) {
+	return func(wp *WorkerPool) { wp.panicHandler = handler }
+}
 
 // NewWorkerPool 创建新的工作池
 //
@@ -43,18 +49,22 @@ var ErrWorkerPoolStopped = errors.New("worker pool is stopped")
 //	pool := NewWorkerPool(10)
 //
 // NewWorkerPool creates a new worker pool
-func NewWorkerPool(workers int) *WorkerPool {
+func NewWorkerPool(workers int, options ...func(*WorkerPool)) *WorkerPool {
 	if workers <= 0 {
 		workers = 1
 	}
 	ctx, cancel := context.WithCancel(context.Background())
-	return &WorkerPool{
+	pool := &WorkerPool{
 		workers:   workers,
 		taskQueue: make(chan func(), workers*2),
 		ctx:       ctx,
 		cancel:    cancel,
 		stopDone:  make(chan struct{}),
 	}
+	for _, option := range options {
+		option(pool)
+	}
+	return pool
 }
 
 // Start 启动工作池
@@ -91,6 +101,11 @@ func (wp *WorkerPool) worker() {
 	for task := range wp.taskQueue {
 		func() {
 			defer wp.taskWG.Done()
+			defer func() {
+				if recovered := recover(); recovered != nil && wp.panicHandler != nil {
+					wp.panicHandler(recovered)
+				}
+			}()
 			if task != nil {
 				task()
 			}
@@ -186,6 +201,7 @@ func (wp *WorkerPool) Wait() {
 // RateLimiter limits the rate of requests using a token bucket algorithm
 type RateLimiter struct {
 	limit    int64 // 每秒允许的请求数 / requests per second
+	burst    int64 // maximum immediately available requests
 	tokens   int64 // 当前可用令牌数（单位：纳秒等价令牌） / available tokens in nanosecond units
 	lastTime int64 // 上次更新时间（纳秒） / last update time in nanoseconds
 	mu       sync.Mutex
@@ -205,13 +221,22 @@ type RateLimiter struct {
 //
 // NewRateLimiter creates a new rate limiter
 func NewRateLimiter(limit int) *RateLimiter {
+	return NewRateLimiterWithBurst(limit, limit)
+}
+
+// NewRateLimiterWithBurst creates a limiter with limit requests per second and a burst capacity.
+func NewRateLimiterWithBurst(limit, burst int) *RateLimiter {
 	if limit <= 0 {
 		limit = 1
+	}
+	if burst <= 0 {
+		burst = 1
 	}
 	now := time.Now().UnixNano()
 	return &RateLimiter{
 		limit:    int64(limit),
-		tokens:   int64(limit) * int64(time.Second), // 初始满令牌，单位为纳秒
+		burst:    int64(burst),
+		tokens:   int64(burst) * int64(time.Second), // 初始满令牌，单位为纳秒
 		lastTime: now,
 	}
 }
@@ -241,7 +266,7 @@ func (rl *RateLimiter) Allow() bool {
 	// tokens 以纳秒为单位累积，每纳秒产生 limit/1e9 个令牌。
 	// 全部用整数运算，消除浮点截断误差。
 	// cap = limit * 1e9（纳秒），即满桶上限
-	capNs := rl.limit * int64(time.Second)
+	capNs := rl.burst * int64(time.Second)
 	rl.tokens += elapsed * rl.limit
 	if rl.tokens > capNs {
 		rl.tokens = capNs

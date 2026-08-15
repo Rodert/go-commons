@@ -62,6 +62,19 @@ func TestStringToFloat64(t *testing.T) {
 	}
 }
 
+func TestStringToInt64AndInt64ToString(t *testing.T) {
+	value, err := StringToInt64("ff", 16)
+	if err != nil || value != 255 {
+		t.Fatalf("StringToInt64() = %d, %v; want 255, nil", value, err)
+	}
+	if _, err := StringToInt64("invalid", 10); err == nil {
+		t.Fatal("StringToInt64() error = nil, want error")
+	}
+	if got := Int64ToString(255, 16); got != "ff" {
+		t.Errorf("Int64ToString() = %q, want ff", got)
+	}
+}
+
 func TestStringToBool(t *testing.T) {
 	tests := []struct {
 		name      string
@@ -245,5 +258,15 @@ func TestDeepCopy(t *testing.T) {
 	}
 	if !reflect.DeepEqual(srcSlice, dstSlice) {
 		t.Errorf("DeepCopy slice = %v; want %v", dstSlice, srcSlice)
+	}
+}
+
+func TestDeepCopyRejectsNonPointers(t *testing.T) {
+	var destination map[string]string
+	if err := DeepCopy(map[string]string{"key": "value"}, &destination); err == nil {
+		t.Fatal("DeepCopy() error = nil, want source pointer error")
+	}
+	if err := DeepCopy(&destination, destination); err == nil {
+		t.Fatal("DeepCopy() error = nil, want destination pointer error")
 	}
 }

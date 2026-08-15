@@ -1,6 +1,7 @@
 package fileutils
 
 import (
+	"errors"
 	"os"
 	"path/filepath"
 	"testing"
@@ -317,6 +318,14 @@ func TestDeleteDir(t *testing.T) {
 
 	if Exists(tmpDir) {
 		t.Errorf("DeleteDir 后目录仍存在: %q", tmpDir)
+	}
+}
+
+func TestDeleteDirRejectsUnsafePaths(t *testing.T) {
+	for _, path := range []string{"", ".", string(filepath.Separator)} {
+		if err := DeleteDir(path); !errors.Is(err, ErrUnsafeDeletePath) {
+			t.Errorf("DeleteDir(%q) error = %v, want ErrUnsafeDeletePath", path, err)
+		}
 	}
 }
 

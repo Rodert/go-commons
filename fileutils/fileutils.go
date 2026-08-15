@@ -3,12 +3,16 @@
 package fileutils
 
 import (
+	"errors"
 	"fmt"
 	"io"
 	"os"
 	"path/filepath"
 	"strings"
 )
+
+// ErrUnsafeDeletePath is returned when a directory path is too broad for recursive deletion.
+var ErrUnsafeDeletePath = errors.New("refusing to recursively delete an empty, current, or root directory")
 
 // ReadFile 读取整个文件内容
 //
@@ -338,6 +342,19 @@ func DeleteFile(filePath string) error {
 //
 // DeleteDir deletes a directory and all its contents
 func DeleteDir(dirPath string) error {
+	return DeleteDirSafe(dirPath)
+}
+
+// DeleteDirSafe recursively deletes dirPath after rejecting empty, current-directory, and root paths.
+func DeleteDirSafe(dirPath string) error {
+	if dirPath == "" {
+		return ErrUnsafeDeletePath
+	}
+	cleanPath := filepath.Clean(dirPath)
+	root := filepath.VolumeName(cleanPath) + string(filepath.Separator)
+	if cleanPath == "." || cleanPath == root {
+		return ErrUnsafeDeletePath
+	}
 	return os.RemoveAll(dirPath)
 }
 

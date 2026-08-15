@@ -12,7 +12,7 @@ A comprehensive collection of Go utility packages with minimal third‑party dep
 
 ## Features
 
-- **Standard-library-first**: Core utilities use the Go standard library; the optional API documentation server uses Gin and Swag.
+- **Standard-library-first**: Core utilities use the Go standard library. The optional Gin/Swag API server lives in the separate `cmd/apidocs` module.
 - **String utilities (`stringutils`)**:
   - Emptiness and whitespace: `IsEmpty`, `IsNotEmpty`, `IsBlank`, `IsNotBlank`, `Trim`, `TrimToEmpty`
   - Substrings and checks: `ContainsAny`, `ContainsAll`, `SubstringBefore`, `SubstringAfter`, `StartsWith`, `EndsWith`

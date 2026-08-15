@@ -1,5 +1,5 @@
-//go:build !noswagger
-// +build !noswagger
+//go:build apidocs && !noswagger
+// +build apidocs,!noswagger
 
 package main
 
@@ -9,7 +9,7 @@ import (
 	"github.com/gin-gonic/gin"
 	swaggerFiles "github.com/swaggo/files"
 	ginSwagger "github.com/swaggo/gin-swagger"
-	_ "github.com/Rodert/go-commons/docs" // 导入生成的docs
+	_ "github.com/Rodert/go-commons/cmd/apidocs/docs" // 导入生成的docs
 )
 
 // @title Go Commons API

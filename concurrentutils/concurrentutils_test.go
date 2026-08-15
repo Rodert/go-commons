@@ -150,6 +150,35 @@ func TestWorkerPool_StopBeforeStart(t *testing.T) {
 	}
 }
 
+func TestWorkerPool_RecoversTaskPanic(t *testing.T) {
+	panics := make(chan any, 1)
+	pool := NewWorkerPool(1, WithPanicHandler(func(recovered any) { panics <- recovered }))
+	defer pool.Stop()
+
+	if err := pool.Submit(func() { panic("boom") }); err != nil {
+		t.Fatalf("Submit() error = %v", err)
+	}
+	completed := make(chan struct{})
+	if err := pool.Submit(func() { close(completed) }); err != nil {
+		t.Fatalf("Submit() error = %v", err)
+	}
+	pool.Wait()
+
+	select {
+	case recovered := <-panics:
+		if recovered != "boom" {
+			t.Errorf("panic value = %v, want boom", recovered)
+		}
+	default:
+		t.Fatal("panic handler was not invoked")
+	}
+	select {
+	case <-completed:
+	default:
+		t.Fatal("worker did not process the task following a panic")
+	}
+}
+
 func TestNewRateLimiter(t *testing.T) {
 	tests := []struct {
 		name  string
@@ -168,6 +197,18 @@ func TestNewRateLimiter(t *testing.T) {
 				t.Errorf("NewRateLimiter() limit = %v, want %v", limiter.limit, tt.want)
 			}
 		})
+	}
+}
+
+func TestNewRateLimiterWithBurst(t *testing.T) {
+	limiter := NewRateLimiterWithBurst(1, 3)
+	for i := 0; i < 3; i++ {
+		if !limiter.Allow() {
+			t.Fatalf("Allow() request %d = false, want true", i+1)
+		}
+	}
+	if limiter.Allow() {
+		t.Fatal("Allow() exceeded configured burst")
 	}
 }
 

@@ -12,7 +12,7 @@
 
 ## 特性
 
-- **尽量不使用第三方依赖**：优先使用 Go 标准库
+- **标准库优先**：核心工具仅使用 Go 标准库；可选的 Gin/Swag API 服务位于独立的 `cmd/apidocs` module。
 - **字符串工具（`stringutils`）**：
   - 空与空白：`IsEmpty`、`IsNotEmpty`、`IsBlank`、`IsNotBlank`、`Trim`、`TrimToEmpty`
   - 子串与判断：`ContainsAny`、`ContainsAll`、`SubstringBefore`、`SubstringAfter`、`StartsWith`、`EndsWith`

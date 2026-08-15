@@ -16,13 +16,13 @@ all: fmt test
 .PHONY: apidocs
 apidocs:
 	@echo "生成并运行API文档..."
-	@if command -v $(shell go env GOPATH)/bin/swag > /dev/null; then \
+	@if command -v $(shell cd cmd/apidocs && go env GOPATH)/bin/swag > /dev/null; then \
 		echo "生成Swagger文档..."; \
-		$(shell go env GOPATH)/bin/swag init -g cmd/apidocs/main.go -o docs; \
+		cd cmd/apidocs && $(shell cd cmd/apidocs && go env GOPATH)/bin/swag init -g main.go -o docs && cp docs/swagger.json docs/swagger.yaml ../../docs/; \
 		echo "启动API文档服务器在 http://localhost:8080"; \
-		go run cmd/apidocs/main.go; \
+		cd cmd/apidocs && go run -tags apidocs .; \
 	else \
-		echo "swag 未安装，请先安装: go install github.com/swaggo/swag/cmd/swag@latest"; \
+		echo "swag 未安装，请先安装: cd cmd/apidocs && go install github.com/swaggo/swag/cmd/swag@latest"; \
 	fi
 
 # 格式化代码
@@ -47,9 +47,14 @@ test:
 	@echo "运行所有测试..."
 	@$(GO) test -race -v ./...
 
-# 在与 CI 一致的 Go 容器中运行竞态检测和完整测试
+# 使用挂载的当前工作区在 Go 容器中运行完整竞态测试
 .PHONY: test-docker
 test-docker:
+	@docker run --rm -v "$(CURDIR):/src" -w /src golang:1.24 go test -race ./...
+
+# 构建 CI 使用的测试镜像
+.PHONY: test-docker-image
+test-docker-image:
 	@docker build --target test -t go-commons-test .
 
 # 运行所有测试但不生成apidocs
@@ -112,6 +117,7 @@ help:
 	@echo "  make fmt      - 格式化代码"
 	@echo "  make test     - 运行所有测试"
 	@echo "  make test-docker - 在 Docker 中运行完整竞态测试"
+	@echo "  make test-docker-image - 构建 CI 测试镜像"
 	@echo "  make test-no-apidocs - 运行所有测试但不生成apidocs"
 	@echo "  make test-pkg PKG=./path/to/package - 运行指定包的测试"
 	@echo "  make cover    - 运行测试并生成覆盖率报告"

@@ -27,10 +27,11 @@ jobs:
           go-version-file: 'go.mod'
 
       - name: Install swag
+        working-directory: cmd/apidocs
         run: go install github.com/swaggo/swag/cmd/swag@latest
 
       - name: Generate Swagger docs
-        run: $(go env GOPATH)/bin/swag init -g cmd/apidocs/main.go -o docs
+        run: cd cmd/apidocs && $(go env GOPATH)/bin/swag init -g main.go -o docs && cp docs/swagger.json docs/swagger.yaml ../../docs/
 
       - name: Setup Pages
         uses: actions/configure-pages@v4

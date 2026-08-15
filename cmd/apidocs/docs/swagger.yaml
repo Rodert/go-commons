@@ -1,0 +1,189 @@
+basePath: /api/v1
+definitions:
+  main.PadCenterRequest:
+    properties:
+      padStr:
+        type: string
+      size:
+        type: integer
+      str:
+        type: string
+    required:
+    - padStr
+    - size
+    - str
+    type: object
+host: localhost:8080
+info:
+  contact:
+    email: support@example.com
+    name: API Support
+    url: https://github.com/Rodert/go-commons
+  description: Go Commons 是一个精简的Go实用工具库，专注于字符串处理和系统工具
+  license:
+    name: Unlicense
+    url: https://github.com/Rodert/go-commons/blob/main/LICENSE
+  termsOfService: http://swagger.io/terms/
+  title: Go Commons API
+  version: "1.0"
+paths:
+  /string/isEmpty/{str}:
+    get:
+      consumes:
+      - application/json
+      description: 检查提供的字符串是否为空
+      parameters:
+      - description: 要检查的字符串
+        in: path
+        name: str
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            additionalProperties: true
+            type: object
+      summary: 检查字符串是否为空
+      tags:
+      - 字符串工具
+  /string/isNotEmpty/{str}:
+    get:
+      consumes:
+      - application/json
+      description: 检查提供的字符串是否非空
+      parameters:
+      - description: 要检查的字符串
+        in: path
+        name: str
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            additionalProperties: true
+            type: object
+      summary: 检查字符串是否非空
+      tags:
+      - 字符串工具
+  /string/padCenter:
+    post:
+      consumes:
+      - application/json
+      description: 在字符串两侧填充字符，使其居中
+      parameters:
+      - description: 填充请求
+        in: body
+        name: request
+        required: true
+        schema:
+          $ref: '#/definitions/main.PadCenterRequest'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            additionalProperties: true
+            type: object
+      summary: 居中填充字符串
+      tags:
+      - 字符串工具
+  /string/reverse/{str}:
+    get:
+      consumes:
+      - application/json
+      description: 反转提供的字符串
+      parameters:
+      - description: 要反转的字符串
+        in: path
+        name: str
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            additionalProperties: true
+            type: object
+      summary: 反转字符串
+      tags:
+      - 字符串工具
+  /string/swapCase/{str}:
+    get:
+      consumes:
+      - application/json
+      description: 交换提供的字符串中字母的大小写
+      parameters:
+      - description: 要处理的字符串
+        in: path
+        name: str
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            additionalProperties: true
+            type: object
+      summary: 交换字符串大小写
+      tags:
+      - 字符串工具
+  /system/cpu:
+    get:
+      consumes:
+      - application/json
+      description: 获取CPU核心数、使用率百分比和负载平均值
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            additionalProperties: true
+            type: object
+      summary: 获取CPU信息
+      tags:
+      - 系统工具
+  /system/disk:
+    get:
+      consumes:
+      - application/json
+      description: 获取磁盘空间信息，包括总空间、可用空间、已用空间和使用率
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            additionalProperties: true
+            type: object
+      summary: 获取磁盘信息
+      tags:
+      - 系统工具
+  /system/memory:
+    get:
+      consumes:
+      - application/json
+      description: 获取总内存、可用内存和已用内存
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            additionalProperties: true
+            type: object
+      summary: 获取内存信息
+      tags:
+      - 系统工具
+swagger: "2.0"

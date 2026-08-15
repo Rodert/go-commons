@@ -36,6 +36,43 @@ func TestHTTPClientGetWithContext(t *testing.T) {
 	}
 }
 
+func TestHTTPClientPostAndJSONHelpers(t *testing.T) {
+	server := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		if r.Method == http.MethodGet {
+			w.WriteHeader(http.StatusTeapot)
+			return
+		}
+		if r.Method != http.MethodPost {
+			t.Errorf("method = %s, want POST", r.Method)
+		}
+		if r.Header.Get("X-Request-ID") != "test" {
+			t.Errorf("X-Request-ID = %q", r.Header.Get("X-Request-ID"))
+		}
+		if r.Header.Get("Content-Type") != "application/json" {
+			t.Errorf("Content-Type = %q", r.Header.Get("Content-Type"))
+		}
+		w.Header().Set("Content-Type", "application/json")
+		_, _ = w.Write([]byte(`{"ok":true}`))
+	}))
+	defer server.Close()
+
+	client := netutils.NewHTTPClient(time.Second)
+	response, err := client.PostJSON(server.URL, map[string]string{"X-Request-ID": "test"}, map[string]string{"name": "commons"})
+	if err != nil {
+		t.Fatalf("PostJSON() error = %v", err)
+	}
+	if response.StatusCode != http.StatusOK {
+		t.Errorf("status = %d, want 200", response.StatusCode)
+	}
+
+	var decoded struct {
+		OK bool `json:"ok"`
+	}
+	if err := client.GetJSON(server.URL, nil, &decoded); err == nil {
+		t.Fatal("GetJSON() error = nil, want non-2xx error")
+	}
+}
+
 func TestIsValidIPv4(t *testing.T) {
 	tests := []struct {
 		ip       string
